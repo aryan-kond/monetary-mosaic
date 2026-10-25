@@ -4,6 +4,7 @@ import { AppShell } from './components/AppShell/AppShell';
 import { Button } from './components/Button/Button';
 import { PageHeader } from './components/PageHeader/PageHeader';
 import { primaryNav, utilityNav, type NavId } from './components/Sidebar/navItems';
+import { SummaryCards } from './components/SummaryCards/SummaryCards';
 import { reportingPeriod } from './data/mockData';
 import './App.css';
 
@@ -31,7 +32,11 @@ export default function App() {
           ) : undefined
         }
       />
-      <p className="page-placeholder">This screen will be built in a later step.</p>
+      {isOverview ? (
+        <SummaryCards />
+      ) : (
+        <p className="page-placeholder">This screen will be built in a later step.</p>
+      )}
     </AppShell>
   );
 }

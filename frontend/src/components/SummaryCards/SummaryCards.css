@@ -1,0 +1,24 @@
+/* Container queries keep the layout correct whether or not the sidebar is visible. */
+.summary-cards {
+  container-type: inline-size;
+}
+
+.summary-cards__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+@container (min-width: 520px) {
+  .summary-cards__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (min-width: 960px) {
+  .summary-cards__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
