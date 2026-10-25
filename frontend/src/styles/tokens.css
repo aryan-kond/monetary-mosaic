@@ -1,0 +1,72 @@
+/* Design tokens. Source of truth: Monetary Mosaic Design Guidelines. */
+:root {
+  /* Color: interaction */
+  --color-primary: #3366cc;
+  --color-primary-hover: #2954b8;
+  --color-primary-pressed: #21469b;
+  --color-primary-tint: #eaf0ff;
+  --color-primary-pale: #f5f7ff;
+
+  /* Color: text */
+  --color-text-primary: #18243a;
+  --color-text-body: #263349;
+  --color-text-secondary: #596579;
+  --color-text-muted: #788397; /* low-priority helper text only, never essential content */
+
+  /* Color: surfaces */
+  --color-canvas: #ffffff;
+  --color-surface-soft: #f7f9fc;
+  --color-border: #e2e8f0;
+
+  /* Color: semantic (always pair with a label, icon, or text) */
+  --color-positive: #21845a;
+  --color-positive-tint: #e6f4ec;
+  --color-warning: #b7791f;
+  --color-warning-tint: #fff3de;
+  --color-negative: #c44747;
+  --color-negative-tint: #fcecec;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Typography */
+  --font-sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-page-title: 30px;
+  --text-hero-metric: 36px;
+  --text-section: 21px;
+  --text-card-heading: 17px;
+  --text-body: 16px;
+  --text-control: 16px;
+  --text-row: 15px;
+  --text-label: 14px;
+  --text-meta: 13px;
+  --leading-body: 1.5;
+
+  /* Shape */
+  --radius-card: 14px;
+  --radius-input: 12px;
+  --radius-dialog: 18px;
+  --radius-pill: 999px;
+
+  /* Elevation (restrained) */
+  --shadow-card: 0 1px 2px rgba(24, 36, 58, 0.06), 0 1px 3px rgba(24, 36, 58, 0.04);
+  --shadow-overlay: 0 12px 32px rgba(24, 36, 58, 0.16);
+
+  /* Motion: ordinary transitions stay within 250-400 ms */
+  --duration-fast: 250ms;
+  --duration-menu: 300ms;
+  --duration-dialog: 330ms;
+  --ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  /* Layout */
+  --sidebar-width: 248px;
+  --content-max-width: 1440px;
+  --topbar-height: 64px;
+}

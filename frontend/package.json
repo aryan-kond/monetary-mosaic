@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write src",
-    "format:check": "prettier --check src"
+    "format:check": "prettier --check src",
+    "check": "npm run lint && npm run format:check && npm run build"
   },
   "dependencies": {
     "@fontsource/source-sans-3": "^5.3.1",
