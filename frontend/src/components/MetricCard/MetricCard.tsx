@@ -46,7 +46,7 @@ export function MetricCard({ label, value, note, badge, progress }: MetricCardPr
 
       {badge && BadgeIcon && (
         <p className={`metric-badge metric-badge--${badge.tone}`}>
-          <BadgeIcon size={14} strokeWidth={2} aria-hidden="true" />
+          <BadgeIcon size={16} strokeWidth={2} aria-hidden="true" />
           <span>{badge.text}</span>
         </p>
       )}
