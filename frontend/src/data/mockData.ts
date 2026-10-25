@@ -44,3 +44,39 @@ export const summaryData = {
   previousTotalIncome: 125000,
   monthlyBudget: 65000,
 };
+export const forecastConfig = {
+  daysInMonth: 31,
+  monthEndLabel: '31 Oct',
+};
+
+export interface Insight {
+  id: string;
+  /** "observed" is a fact from the data. "review" asks the user to check something. */
+  kind: 'observed' | 'review';
+  title: string;
+  detail: string;
+}
+
+export const insights: Insight[] = [
+  {
+    id: 'dining-trend',
+    kind: 'observed',
+    title: 'Dining is trending above last month',
+    detail:
+      'You have spent ₹5,120 on dining out so far, about 18% more than the same days in September (₹4,340).',
+  },
+  {
+    id: 'rent-share',
+    kind: 'observed',
+    title: 'Rent is your largest expense',
+    detail:
+      '₹16,000 on 1 Oct is 33% of everything spent so far. Across the 25 days, your spending averages about ₹1,290 a day.',
+  },
+  {
+    id: 'category-review',
+    kind: 'review',
+    title: '6 transactions need a category check',
+    detail:
+      'Their categories were assigned automatically with low confidence. Review them in Transactions to keep your totals accurate.',
+  },
+];

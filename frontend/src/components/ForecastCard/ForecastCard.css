@@ -1,0 +1,119 @@
+.forecast__label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.forecast__value {
+  margin-top: var(--space-1);
+  font-size: var(--text-hero-metric);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color-text-primary);
+}
+
+.forecast__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-4) 0 var(--space-6);
+}
+
+.forecast__difference {
+  font-size: var(--text-row);
+  color: var(--color-text-secondary);
+}
+
+/* The wrapper is not clipped, so the budget marker can extend past the track. */
+.forecast-bar {
+  position: relative;
+}
+
+.forecast-bar__track {
+  display: flex;
+  height: 16px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+}
+
+.forecast-bar__actual {
+  background: var(--color-primary);
+}
+
+/* Striped, so an estimate never looks like verified spending. */
+.forecast-bar__estimate {
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 55%, #ffffff) 0 5px,
+    #ffffff 5px 10px
+  );
+}
+
+.forecast-bar__marker {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--color-text-primary);
+}
+
+.forecast__legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.forecast__legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-row);
+  color: var(--color-text-body);
+}
+
+.forecast__legend strong {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.forecast__swatch {
+  flex: none;
+  width: 24px;
+  height: 12px;
+  border-radius: var(--radius-pill);
+}
+
+.forecast__swatch--actual {
+  background: var(--color-primary);
+}
+
+.forecast__swatch--estimate {
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 55%, #ffffff) 0 4px,
+    #ffffff 4px 8px
+  );
+  border: 1px solid color-mix(in srgb, var(--color-primary) 55%, #ffffff);
+}
+
+.forecast__swatch--budget {
+  width: 2px;
+  height: 16px;
+  margin: 0 11px;
+  border-radius: 1px;
+  background: var(--color-text-primary);
+}
+
+.forecast__note {
+  margin-top: var(--space-6);
+  font-size: var(--text-meta);
+  color: var(--color-text-secondary);
+}
