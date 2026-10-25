@@ -1,3 +1,5 @@
+import type { CategoryId } from './categories';
+
 export const reportingPeriod = {
   label: '1 Oct – 25 Oct 2026',
 };
@@ -20,6 +22,18 @@ export const dailySpending = {
     1610, 1130, 2870, 650, 1240, 980, 2130, 820, 1900,
   ],
 };
+
+/** Sample spending by category. These add up to the same ₹48,260 as the daily figures. */
+export const categorySpending: { categoryId: CategoryId; amount: number }[] = [
+  { categoryId: 'housing', amount: 16000 },
+  { categoryId: 'groceries', amount: 8450 },
+  { categoryId: 'dining', amount: 5120 },
+  { categoryId: 'shopping', amount: 4970 },
+  { categoryId: 'transport', amount: 3680 },
+  { categoryId: 'bills', amount: 3240 },
+  { categoryId: 'health', amount: 1920 },
+  { categoryId: 'other', amount: 4880 },
+];
 
 /** Sample figures. Amounts are in whole rupees. */
 export const summaryData = {

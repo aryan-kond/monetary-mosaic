@@ -1,11 +1,3 @@
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  CircleAlert,
-  CircleCheck,
-  Minus,
-  TriangleAlert,
-} from 'lucide-react';
 import { summaryData } from '../../data/mockData';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { MetricCard, type MetricBadge, type MetricProgress } from '../MetricCard/MetricCard';
@@ -27,12 +19,11 @@ function getTrend(
   if (previous === 0) return undefined;
   const change = ((current - previous) / previous) * 100;
   if (Math.abs(change) < 0.05) {
-    return { tone: 'neutral', icon: Minus, text: `Same as ${periodLabel}` };
+    return { tone: 'neutral', text: `Same as ${periodLabel}` };
   }
   const direction: Direction = change > 0 ? 'up' : 'down';
   return {
     tone: direction === favorable ? 'positive' : 'neutral',
-    icon: direction === 'up' ? ArrowUpRight : ArrowDownRight,
     text: `${Math.abs(change).toFixed(1)}% ${direction === 'up' ? 'above' : 'below'} ${periodLabel}`,
   };
 }
@@ -43,21 +34,12 @@ function getBudgetStatus(percentUsed: number): {
   progressTone: MetricProgress['tone'];
 } {
   if (percentUsed > 100) {
-    return {
-      badge: { tone: 'negative', icon: CircleAlert, text: 'Over budget' },
-      progressTone: 'negative',
-    };
+    return { badge: { tone: 'negative', text: 'Over budget' }, progressTone: 'negative' };
   }
   if (percentUsed >= 80) {
-    return {
-      badge: { tone: 'warning', icon: TriangleAlert, text: 'Nearing limit' },
-      progressTone: 'warning',
-    };
+    return { badge: { tone: 'warning', text: 'Nearing limit' }, progressTone: 'warning' };
   }
-  return {
-    badge: { tone: 'positive', icon: CircleCheck, text: 'On track' },
-    progressTone: undefined,
-  };
+  return { badge: { tone: 'positive', text: 'On track' }, progressTone: undefined };
 }
 
 export function SummaryCards() {

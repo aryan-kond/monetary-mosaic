@@ -1,10 +1,8 @@
-import type { LucideIcon } from 'lucide-react';
 import { Chip } from '../Chip/Chip';
 import './MetricCard.css';
 
 export interface MetricBadge {
   tone: 'positive' | 'neutral' | 'warning' | 'negative';
-  icon: LucideIcon;
   text: string;
 }
 
@@ -45,7 +43,7 @@ export function MetricCard({ label, value, note, badge, progress }: MetricCardPr
       <p className="metric-card__note">{note}</p>
 
       {badge && (
-        <Chip tone={badge.tone} icon={badge.icon} className="metric-card__badge">
+        <Chip tone={badge.tone} className="metric-card__badge">
           {badge.text}
         </Chip>
       )}

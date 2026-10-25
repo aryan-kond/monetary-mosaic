@@ -3,3 +3,20 @@
   flex-direction: column;
   gap: var(--space-6);
 }
+
+/* Container query: the layout follows the content width, with or without the sidebar. */
+.overview__analysis {
+  container-type: inline-size;
+}
+
+.overview__analysis-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+@container (min-width: 880px) {
+  .overview__analysis-grid {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}
