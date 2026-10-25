@@ -1,0 +1,53 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-text-body);
+}
+
+.chip--with-icon {
+  padding-left: var(--space-3);
+}
+
+.chip svg {
+  flex: none;
+}
+
+.chip--neutral {
+  background: var(--color-surface-soft);
+  border-color: var(--color-border);
+}
+
+.chip--neutral svg {
+  color: var(--color-text-secondary);
+}
+
+.chip--positive {
+  background: var(--color-positive-tint);
+}
+
+.chip--positive svg {
+  color: var(--color-positive);
+}
+
+.chip--warning {
+  background: var(--color-warning-tint);
+}
+
+.chip--warning svg {
+  color: var(--color-warning);
+}
+
+.chip--negative {
+  background: var(--color-negative-tint);
+}
+
+.chip--negative svg {
+  color: var(--color-negative);
+}

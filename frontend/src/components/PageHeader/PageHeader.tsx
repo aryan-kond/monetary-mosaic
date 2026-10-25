@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { CalendarDays } from 'lucide-react';
+import { Chip } from '../Chip/Chip';
 import './PageHeader.css';
 
 interface PageHeaderProps {
@@ -27,7 +28,7 @@ export function PageHeader({ title, period, sampleData = false, action }: PageHe
                 <span>Reporting period: {period}</span>
               </p>
             )}
-            {sampleData && <span className="page-header__chip">Sample data</span>}
+            {sampleData && <Chip>Sample data</Chip>}
           </div>
         )}
       </div>

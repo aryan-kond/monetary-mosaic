@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import { Chip } from '../Chip/Chip';
 import './MetricCard.css';
 
 export interface MetricBadge {
@@ -29,7 +30,6 @@ interface MetricCardProps {
 }
 
 export function MetricCard({ label, value, note, badge, progress }: MetricCardProps) {
-  const BadgeIcon = badge?.icon;
   const fillPercent = progress ? Math.min(Math.max(progress.percent, 0), 100) : 0;
   const fillClass = [
     'metric-progress__fill',
@@ -44,11 +44,10 @@ export function MetricCard({ label, value, note, badge, progress }: MetricCardPr
       <p className="metric-card__value tabular">{value}</p>
       <p className="metric-card__note">{note}</p>
 
-      {badge && BadgeIcon && (
-        <p className={`metric-badge metric-badge--${badge.tone}`}>
-          <BadgeIcon size={16} strokeWidth={2} aria-hidden="true" />
-          <span>{badge.text}</span>
-        </p>
+      {badge && (
+        <Chip tone={badge.tone} icon={badge.icon} className="metric-card__badge">
+          {badge.text}
+        </Chip>
       )}
 
       {progress && (
