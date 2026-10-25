@@ -24,13 +24,6 @@
   color: var(--color-text-body);
 }
 
-.category-row__dot {
-  flex: none;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
 .category-row__amount {
   display: flex;
   align-items: baseline;

@@ -1,0 +1,105 @@
+/* Container query: the table adapts to the card width, not the window. */
+.recent {
+  container-type: inline-size;
+}
+
+.recent__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-row);
+}
+
+.recent__table th,
+.recent__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.recent__table thead th {
+  padding-top: var(--space-2);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.recent__table tr > :first-child {
+  padding-left: 0;
+}
+
+.recent__table tr > :last-child {
+  padding-right: 0;
+}
+
+.recent__table tbody tr:last-child th,
+.recent__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.recent__table .recent__num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.recent__merchant {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.recent__name {
+  display: block;
+}
+
+.recent__meta {
+  display: none;
+  margin-top: 2px;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.recent__col-date {
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.recent__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.recent__num {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* Income is marked with a plus sign and a hidden "Income" label, not color alone. */
+.recent__income {
+  color: var(--color-positive);
+  font-weight: 600;
+}
+
+.recent__note,
+.recent__empty {
+  margin-top: var(--space-4);
+  font-size: var(--text-meta);
+  color: var(--color-text-secondary);
+}
+
+.recent__empty {
+  margin-top: 0;
+  font-size: var(--text-row);
+}
+
+@container (max-width: 639px) {
+  .recent__col-date,
+  .recent__col-category {
+    display: none;
+  }
+
+  .recent__meta {
+    display: block;
+  }
+}

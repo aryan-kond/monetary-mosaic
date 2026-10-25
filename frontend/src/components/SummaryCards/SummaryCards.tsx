@@ -19,12 +19,13 @@ function getTrend(
   if (previous === 0) return undefined;
   const change = ((current - previous) / previous) * 100;
   if (Math.abs(change) < 0.05) {
-    return { tone: 'neutral', text: `Same as ${periodLabel}` };
+    return { tone: 'neutral', text: 'No change', context: `vs ${periodLabel}` };
   }
   const direction: Direction = change > 0 ? 'up' : 'down';
   return {
     tone: direction === favorable ? 'positive' : 'neutral',
-    text: `${Math.abs(change).toFixed(1)}% ${direction === 'up' ? 'above' : 'below'} ${periodLabel}`,
+    text: `${Math.abs(change).toFixed(1)}% ${direction === 'up' ? 'higher' : 'lower'}`,
+    context: `than ${periodLabel}`,
   };
 }
 

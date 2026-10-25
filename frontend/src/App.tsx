@@ -33,7 +33,7 @@ export default function App() {
         }
       />
       {isOverview ? (
-        <OverviewPage />
+        <OverviewPage onViewAllTransactions={() => setActiveId('transactions')} />
       ) : (
         <p className="page-placeholder">This screen will be built in a later step.</p>
       )}

@@ -3,7 +3,10 @@ import './MetricCard.css';
 
 export interface MetricBadge {
   tone: 'positive' | 'neutral' | 'warning' | 'negative';
+  /** Short label, 13 characters or fewer. */
   text: string;
+  /** Plain text shown beside the chip, for example "than 1–25 Sep". */
+  context?: string;
 }
 
 export interface MetricProgress {
@@ -43,9 +46,10 @@ export function MetricCard({ label, value, note, badge, progress }: MetricCardPr
       <p className="metric-card__note">{note}</p>
 
       {badge && (
-        <Chip tone={badge.tone} className="metric-card__badge">
-          {badge.text}
-        </Chip>
+        <div className="metric-card__badge-row">
+          <Chip tone={badge.tone}>{badge.text}</Chip>
+          {badge.context && <span className="metric-card__context">{badge.context}</span>}
+        </div>
       )}
 
       {progress && (

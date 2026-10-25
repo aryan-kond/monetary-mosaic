@@ -44,7 +44,7 @@ export function CategoryBreakdown({ spending, periodLabel }: CategoryBreakdownPr
     <Card
       title="Spending by category"
       description={`${periodLabel}, ${formatCurrency(total)} in total`}
-      action={<Chip>Auto-categorized</Chip>}
+      action={<Chip>Inferred</Chip>}
     >
       <ul className="category-list">
         {rows.map((row) => {
@@ -55,14 +55,7 @@ export function CategoryBreakdown({ spending, periodLabel }: CategoryBreakdownPr
           return (
             <li key={row.categoryId} className="category-row">
               <div className="category-row__top">
-                <span className="category-row__name">
-                  <span
-                    className="category-row__dot"
-                    style={{ background: category.color }}
-                    aria-hidden="true"
-                  />
-                  {category.label}
-                </span>
+                <span className="category-row__name">{category.label}</span>
                 <span className="category-row__amount tabular">
                   <strong>{formatCurrency(row.amount)}</strong>
                   <span className="category-row__share">{share}%</span>

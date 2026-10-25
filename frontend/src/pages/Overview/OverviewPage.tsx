@@ -1,6 +1,7 @@
 import { CategoryBreakdown } from '../../components/CategoryBreakdown/CategoryBreakdown';
 import { ForecastCard } from '../../components/ForecastCard/ForecastCard';
 import { InsightsCard } from '../../components/InsightsCard/InsightsCard';
+import { RecentTransactions } from '../../components/RecentTransactions/RecentTransactions';
 import { SpendingTrend } from '../../components/SpendingTrend/SpendingTrend';
 import { SummaryCards } from '../../components/SummaryCards/SummaryCards';
 import {
@@ -11,10 +12,15 @@ import {
   summaryData,
   trendPeriods,
 } from '../../data/mockData';
+import { recentTransactions } from '../../data/transactions';
 import { projectMonthEnd } from '../../utils/forecast';
 import './OverviewPage.css';
 
-export function OverviewPage() {
+interface OverviewPageProps {
+  onViewAllTransactions: () => void;
+}
+
+export function OverviewPage({ onViewAllTransactions }: OverviewPageProps) {
   const forecast = projectMonthEnd(dailySpending.current, forecastConfig.daysInMonth);
 
   return (
@@ -42,6 +48,8 @@ export function OverviewPage() {
           <InsightsCard insights={insights} periodLabel={trendPeriods.current.label} />
         </div>
       </div>
+
+      <RecentTransactions transactions={recentTransactions} onViewAll={onViewAllTransactions} />
     </div>
   );
 }

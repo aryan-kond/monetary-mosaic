@@ -62,7 +62,7 @@ export function ForecastCard({
 
       <div className="forecast__status">
         <Chip tone={withinBudget ? 'positive' : 'warning'}>
-          {withinBudget ? 'Projected within budget' : 'Projected to exceed budget'}
+          {withinBudget ? 'On track' : 'Likely over'}
         </Chip>
         <p className="forecast__difference">
           About {formatCurrency(Math.abs(difference))} {withinBudget ? 'under' : 'over'} your{' '}
