@@ -4,8 +4,8 @@ import { AppShell } from './components/AppShell/AppShell';
 import { Button } from './components/Button/Button';
 import { PageHeader } from './components/PageHeader/PageHeader';
 import { primaryNav, utilityNav, type NavId } from './components/Sidebar/navItems';
-import { SummaryCards } from './components/SummaryCards/SummaryCards';
 import { reportingPeriod } from './data/mockData';
+import { OverviewPage } from './pages/Overview/OverviewPage';
 import './App.css';
 
 const allNavItems = [...primaryNav, ...utilityNav];
@@ -33,7 +33,7 @@ export default function App() {
         }
       />
       {isOverview ? (
-        <SummaryCards />
+        <OverviewPage />
       ) : (
         <p className="page-placeholder">This screen will be built in a later step.</p>
       )}

@@ -15,6 +15,7 @@ export default defineConfig({
       'lucide-react',
       'gsap',
       'lenis',
+      'recharts',
     ],
   },
 });
