@@ -1,6 +1,10 @@
 import { useState } from 'react';
+import { Upload } from 'lucide-react';
 import { AppShell } from './components/AppShell/AppShell';
+import { Button } from './components/Button/Button';
+import { PageHeader } from './components/PageHeader/PageHeader';
 import { primaryNav, utilityNav, type NavId } from './components/Sidebar/navItems';
+import { reportingPeriod } from './data/mockData';
 import './App.css';
 
 const allNavItems = [...primaryNav, ...utilityNav];
@@ -8,10 +12,25 @@ const allNavItems = [...primaryNav, ...utilityNav];
 export default function App() {
   const [activeId, setActiveId] = useState<NavId>('overview');
   const activeItem = allNavItems.find((item) => item.id === activeId) ?? primaryNav[0];
+  const isOverview = activeId === 'overview';
 
   return (
     <AppShell activeId={activeId} onNavigate={setActiveId}>
-      <h1 className="page-title">{activeItem.label}</h1>
+      <PageHeader
+        title={activeItem.label}
+        period={isOverview ? reportingPeriod.label : undefined}
+        sampleData={isOverview}
+        action={
+          isOverview ? (
+            <Button
+              icon={<Upload size={18} strokeWidth={1.75} />}
+              onClick={() => setActiveId('transactions')}
+            >
+              Import statement
+            </Button>
+          ) : undefined
+        }
+      />
       <p className="page-placeholder">This screen will be built in a later step.</p>
     </AppShell>
   );
