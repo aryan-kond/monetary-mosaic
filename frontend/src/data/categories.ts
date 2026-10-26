@@ -1,5 +1,13 @@
 export type CategoryId =
-  'housing' | 'groceries' | 'dining' | 'shopping' | 'transport' | 'bills' | 'health' | 'other';
+  | 'housing'
+  | 'groceries'
+  | 'dining'
+  | 'shopping'
+  | 'transport'
+  | 'bills'
+  | 'health'
+  | 'other'
+  | 'income';
 
 export interface Category {
   label: string;
@@ -20,4 +28,5 @@ export const categories: Record<CategoryId, Category> = {
   bills: { label: 'Bills', color: '#8A7A24' },
   health: { label: 'Health', color: '#7A3FA0' },
   other: { label: 'Other', color: '#788397' },
+  income: { label: 'Income', color: '#3E7C59' },
 };

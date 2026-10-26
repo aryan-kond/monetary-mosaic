@@ -1,10 +1,7 @@
-import { categories } from '../../data/categories';
 import type { Transaction } from '../../data/transactions';
-import { formatCurrency } from '../../utils/formatCurrency';
-import { formatShortDate } from '../../utils/formatDate';
 import { Button } from '../Button/Button';
 import { Card } from '../Card/Card';
-import { Chip } from '../Chip/Chip';
+import { TransactionsTable } from '../TransactionsTable/TransactionsTable';
 import './RecentTransactions.css';
 
 interface RecentTransactionsProps {
@@ -35,64 +32,10 @@ export function RecentTransactions({ transactions, onViewAll }: RecentTransactio
         </Button>
       }
     >
-      <div className="recent">
-        <table className="recent__table">
-          <caption className="visually-hidden">Most recent transactions (sample data)</caption>
-          <thead>
-            <tr>
-              <th scope="col">Merchant</th>
-              <th scope="col" className="recent__col-date">
-                Date
-              </th>
-              <th scope="col" className="recent__col-category">
-                Category
-              </th>
-              <th scope="col" className="recent__num">
-                Amount
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction) => {
-              const category = categories[transaction.categoryId];
-              const date = formatShortDate(transaction.date);
-              const isIncome = transaction.direction === 'in';
-
-              return (
-                <tr key={transaction.id}>
-                  <th scope="row" className="recent__merchant">
-                    <span className="recent__name">{transaction.merchant}</span>
-                    {/* On narrow screens the date and category move under the merchant name. */}
-                    <span className="recent__meta">
-                      <time dateTime={transaction.date}>{date}</time> · {category.label}
-                      {transaction.needsReview ? ' · Needs review' : ''}
-                    </span>
-                  </th>
-                  <td className="recent__col-date">
-                    <time dateTime={transaction.date}>{date}</time>
-                  </td>
-                  <td className="recent__col-category">
-                    <div className="recent__chips">
-                      <Chip>{category.label}</Chip>
-                      {transaction.needsReview && <Chip tone="warning">Needs review</Chip>}
-                    </div>
-                  </td>
-                  <td className="recent__num tabular">
-                    {isIncome ? (
-                      <span className="recent__income">
-                        <span className="visually-hidden">Income </span>
-                        {formatCurrency(transaction.amount, { signed: true })}
-                      </span>
-                    ) : (
-                      formatCurrency(transaction.amount)
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <TransactionsTable
+        transactions={transactions}
+        caption="Most recent transactions (sample data)"
+      />
       <p className="recent__note">
         Categories are assigned automatically. Correct them in Transactions.
       </p>

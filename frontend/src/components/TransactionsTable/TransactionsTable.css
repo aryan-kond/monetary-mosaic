@@ -1,0 +1,93 @@
+/* Container query: the table adapts to the card it sits in, not the window. */
+.txn-table-wrap {
+  container-type: inline-size;
+}
+
+.txn-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-row);
+}
+
+.txn-table th,
+.txn-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.txn-table thead th {
+  padding-top: var(--space-2);
+  padding-bottom: var(--space-2);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.txn-table tr > :first-child {
+  padding-left: 0;
+}
+
+.txn-table tr > :last-child {
+  padding-right: 0;
+}
+
+.txn-table tbody tr:last-child th,
+.txn-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.txn-table .txn-table__amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.txn-table__merchant {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.txn-table__name {
+  display: block;
+}
+
+.txn-table__meta {
+  display: none;
+  margin-top: 2px;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.txn-table__date {
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.txn-table__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.txn-table td.txn-table__amount {
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* Income is marked with a plus sign and a hidden "Income" label, not color alone. */
+.txn-table__income {
+  color: var(--color-positive);
+  font-weight: 600;
+}
+
+@container (max-width: 719px) {
+  .txn-table__category {
+    display: none;
+  }
+
+  .txn-table__meta {
+    display: block;
+  }
+}

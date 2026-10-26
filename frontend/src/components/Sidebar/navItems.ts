@@ -1,6 +1,6 @@
 import {
   ArrowLeftRight,
-  LayoutDashboard,
+  House,
   Lightbulb,
   PiggyBank,
   Repeat,
@@ -17,7 +17,7 @@ export interface NavItem {
 }
 
 export const primaryNav: NavItem[] = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'overview', label: 'Overview', icon: House },
   { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight },
   { id: 'budgets', label: 'Budgets', icon: PiggyBank },
   { id: 'recurring', label: 'Recurring', icon: Repeat },

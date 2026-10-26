@@ -1,0 +1,77 @@
+/* Container query: the toolbar follows the content width, with or without the sidebar. */
+.txn-page {
+  container-type: inline-size;
+}
+
+.txn-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+/* Search gets its own row, with the three menus below it. */
+@container (min-width: 720px) {
+  .txn-toolbar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .txn-toolbar > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* On wide screens everything fits on one row. */
+@container (min-width: 1000px) {
+  .txn-toolbar {
+    grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  }
+
+  .txn-toolbar > :first-child {
+    grid-column: auto;
+  }
+}
+
+.txn-results {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+.txn-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+.txn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-8) 0 var(--space-4);
+}
+
+.txn-empty__title {
+  font-size: var(--text-card-heading);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.txn-empty__text {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-row);
+  color: var(--color-text-secondary);
+}
