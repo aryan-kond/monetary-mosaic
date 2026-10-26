@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import gsap from 'gsap';
-
 import { Menu } from 'lucide-react';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 import { Logo } from '../Logo/Logo';
 import { Sidebar } from '../Sidebar/Sidebar';
@@ -10,8 +10,26 @@ import './AppShell.css';
 
 /** Below this width the sidebar becomes a drawer. Keep in sync with AppShell.css. */
 const MOBILE_QUERY = '(max-width: 899px)';
+const DESKTOP_QUERY = '(min-width: 900px)';
 /** Guidelines: dialogs and drawers use 300-350 ms. */
 const DRAWER_SECONDS = 0.33;
+const COLLAPSED_STORAGE_KEY = 'mm.sidebarCollapsed';
+
+function readCollapsedPreference(): boolean {
+  try {
+    return window.localStorage.getItem(COLLAPSED_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function saveCollapsedPreference(collapsed: boolean) {
+  try {
+    window.localStorage.setItem(COLLAPSED_STORAGE_KEY, String(collapsed));
+  } catch {
+    // Storage can be blocked. The choice then lasts only until the page reloads.
+  }
+}
 
 interface AppShellProps {
   activeId: NavId;
@@ -21,6 +39,11 @@ interface AppShellProps {
 
 export function AppShell({ activeId, onNavigate, children }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [collapsedPreference, setCollapsedPreference] = useState(readCollapsedPreference);
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  /** The rail only exists on desktop. The mobile drawer is always full width. */
+  const sidebarCollapsed = isDesktop && collapsedPreference;
+
   const shellRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -96,8 +119,17 @@ export function AppShell({ activeId, onNavigate, children }: AppShellProps) {
     setDrawerOpen(false);
   };
 
+  const handleToggleCollapsed = () => {
+    const next = !collapsedPreference;
+    setCollapsedPreference(next);
+    saveCollapsedPreference(next);
+  };
+
   return (
-    <div className="app-shell" ref={shellRef}>
+    <div
+      className={sidebarCollapsed ? 'app-shell app-shell--collapsed' : 'app-shell'}
+      ref={shellRef}
+    >
       <a className="skip-link" href="#main-content">
         Skip to main content
       </a>
@@ -129,6 +161,8 @@ export function AppShell({ activeId, onNavigate, children }: AppShellProps) {
           activeId={activeId}
           onNavigate={handleNavigate}
           onClose={() => setDrawerOpen(false)}
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={isDesktop ? handleToggleCollapsed : undefined}
         />
       </div>
 

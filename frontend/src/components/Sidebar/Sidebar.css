@@ -6,11 +6,46 @@
   padding: var(--space-6) var(--space-4) var(--space-4);
 }
 
+/* Brand: both logos share one cell and cross-fade. */
 .sidebar__brand {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-2);
+}
+
+.sidebar__logos {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sidebar__logo {
+  grid-area: 1 / 1;
+  align-self: center;
+  justify-self: start;
+  transition: opacity var(--duration-fast) var(--ease-standard) 100ms;
+}
+
+.sidebar__logo--full {
+  margin-left: var(--space-2);
+}
+
+/* Fixed offset, so the mark sits in the middle of the collapsed rail and never slides. */
+.sidebar__logo--mark {
+  margin-left: var(--space-1);
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+.sidebar--collapsed .sidebar__logo--full {
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+.sidebar--collapsed .sidebar__logo--mark {
+  opacity: 1;
+  transition-delay: 100ms;
 }
 
 /* The close button only exists for the mobile drawer. */
@@ -27,11 +62,11 @@
 }
 
 .nav-link {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-3);
   min-height: 44px;
-  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
+  padding: var(--space-1);
   border-radius: var(--radius-pill);
   color: var(--color-text-secondary);
   font-size: var(--text-control);
@@ -40,6 +75,36 @@
   transition:
     background-color var(--duration-fast) var(--ease-standard),
     color var(--duration-fast) var(--ease-standard);
+}
+
+/* A button that looks like a nav row, used for the collapse toggle. */
+.nav-link--button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Spacing lives on the label, so it can shrink to nothing when the sidebar collapses. */
+.nav-link__label {
+  max-width: 12rem;
+  padding-inline: var(--space-3);
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 1;
+  transition:
+    max-width var(--duration-menu) var(--ease-standard),
+    padding var(--duration-menu) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard) 100ms;
+}
+
+.sidebar--collapsed .nav-link__label {
+  max-width: 0;
+  padding-inline: 0;
+  opacity: 0;
+  transition-delay: 0s;
 }
 
 /* Circular icon container, 36 px. Inactive icons use a neutral fill. */
@@ -87,16 +152,66 @@
   border-top: 1px solid var(--color-border);
 }
 
+/*
+ * Sample-data note. The full note and the icon both stay in the page. Their heights animate
+ * between 0 and their natural size (the grid-template-rows trick) while they fade.
+ */
+.sidebar__sample-slot,
+.sidebar__sample-rail-slot {
+  display: grid;
+  transition: grid-template-rows var(--duration-menu) var(--ease-standard);
+}
+
+.sidebar__sample-slot {
+  grid-template-rows: 1fr;
+}
+
+.sidebar__sample-rail-slot {
+  grid-template-rows: 0fr;
+}
+
+.sidebar--collapsed .sidebar__sample-slot {
+  grid-template-rows: 0fr;
+}
+
+.sidebar--collapsed .sidebar__sample-rail-slot {
+  grid-template-rows: 1fr;
+}
+
+.sidebar__sample-clip,
+.sidebar__sample-rail-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Tooltips need room, so the icon is only unclipped while the rail is collapsed. */
+.sidebar--collapsed .sidebar__sample-rail-clip {
+  overflow: visible;
+}
+
+/*
+ * The note keeps its full width while the sidebar grows, so its text never re-wraps.
+ * The clip hides the part that has not opened yet, and the fade starts after a short delay.
+ */
 .sidebar__sample {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  width: 100%;
+  min-width: calc(var(--sidebar-width) - 2 * var(--space-4) - 1px);
   padding: var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   background: var(--color-surface-soft);
   font-size: var(--text-meta);
   color: var(--color-text-secondary);
+  opacity: 1;
+  transition: opacity var(--duration-fast) var(--ease-standard) 120ms;
+}
+
+.sidebar--collapsed .sidebar__sample {
+  opacity: 0;
+  transition-delay: 0s;
 }
 
 .sidebar__sample strong {
@@ -105,8 +220,87 @@
   color: var(--color-text-primary);
 }
 
+.sidebar__sample-rail {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: var(--color-surface-soft);
+  color: var(--color-text-secondary);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+
+.sidebar--collapsed .sidebar__sample-rail {
+  opacity: 1;
+  transition-delay: 120ms;
+}
+
+/* Tooltip shown beside a collapsed icon on hover or keyboard focus. */
+.rail-tip {
+  position: relative;
+}
+
+.rail-tip__text {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + var(--space-3));
+  z-index: 60;
+  padding: 6px var(--space-3);
+  border-radius: 10px;
+  background: var(--color-text-primary);
+  color: #ffffff;
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%);
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    visibility var(--duration-fast) var(--ease-standard);
+}
+
+.rail-tip__text--wide {
+  width: 240px;
+  white-space: normal;
+}
+
+.sidebar--collapsed .rail-tip:hover > .rail-tip__text,
+.sidebar--collapsed .rail-tip:focus-visible > .rail-tip__text {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Drawer on tablet and mobile: more room, taller rows, Settings pinned to the bottom. */
 @media (max-width: 899px) {
+  .sidebar {
+    padding: var(--space-6);
+    padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+  }
+
   .sidebar__close {
     display: inline-grid;
+  }
+
+  .sidebar__list {
+    gap: var(--space-2);
+  }
+
+  .nav-link {
+    min-height: 48px;
+  }
+
+  .sidebar__footer {
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+  }
+
+  .sidebar__sample {
+    min-width: 0;
   }
 }

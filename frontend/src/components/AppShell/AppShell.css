@@ -1,5 +1,10 @@
 .app-shell {
+  --shell-sidebar-width: var(--sidebar-width);
   min-height: 100vh;
+}
+
+.app-shell--collapsed {
+  --shell-sidebar-width: var(--sidebar-collapsed-width);
 }
 
 .skip-link {
@@ -20,16 +25,22 @@
   transform: translateY(0);
 }
 
-/* Desktop: fixed 248 px sidebar. */
+/* Desktop: fixed sidebar, 248 px expanded or a 72 px icon rail. */
 .app-shell__sidebar {
   position: fixed;
   inset: 0 auto 0 0;
   z-index: 40;
-  width: var(--sidebar-width);
+  width: var(--shell-sidebar-width);
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--color-canvas);
   border-right: 1px solid var(--color-border);
+}
+
+/* The rail does not scroll, so tooltips can extend past its edge. */
+.app-shell--collapsed .app-shell__sidebar {
+  overflow: visible;
 }
 
 .app-shell__topbar,
@@ -38,7 +49,7 @@
 }
 
 .app-shell__main {
-  margin-left: var(--sidebar-width);
+  margin-left: var(--shell-sidebar-width);
 }
 
 .app-shell__main:focus {
@@ -49,6 +60,16 @@
   max-width: var(--content-max-width);
   margin: 0 auto;
   padding: var(--space-8);
+}
+
+@media (min-width: 900px) {
+  .app-shell__sidebar {
+    transition: width var(--duration-menu) var(--ease-standard);
+  }
+
+  .app-shell__main {
+    transition: margin-left var(--duration-menu) var(--ease-standard);
+  }
 }
 
 /* Tablet and mobile: the sidebar becomes a drawer. GSAP animates transform and visibility. */
@@ -72,11 +93,12 @@
     z-index: 30;
     display: block;
     background: rgba(24, 36, 58, 0.4);
+    backdrop-filter: blur(2px);
     visibility: hidden;
   }
 
   .app-shell__sidebar {
-    width: min(var(--sidebar-width), 85vw);
+    width: min(var(--drawer-width), 88vw);
     border-right: 0;
     border-radius: 0 var(--radius-dialog) var(--radius-dialog) 0;
     box-shadow: var(--shadow-overlay);
