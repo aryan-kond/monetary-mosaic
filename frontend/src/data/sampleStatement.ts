@@ -1,0 +1,19 @@
+/** A small bank-style statement for trying the import. Clearly labeled as sample data in the app. */
+export const sampleStatement = {
+  fileName: 'sample-statement.csv',
+  text: [
+    'Date,Description,Debit,Credit,Balance',
+    '25/10/2026,UPI-ZOMATO-ZOMATO@OKAXIS,620.00,,84230.50',
+    '25/10/2026,POS BIGBASKET BANGALORE,"1,180.00",,83050.50',
+    '26/10/2026,UPI-UBER INDIA-UBER@AXISB,285.00,,82765.50',
+    '26/10/2026,POS STARBUCKS COFFEE,540.00,,82225.50',
+    '26/10/2026,"POS DECATHLON SPORTS, KORAMANGALA","2,350.00",,79875.50',
+    '26/10/2026,UPI-RAPIDO-RAPIDO@YBL,95.00,,79780.50',
+    '27/10/2026,NEFT-INTEREST CREDIT,,312.40,80092.90',
+    '27/10/2026,ATM WDL SBI HSR LAYOUT,"2,000.00",,78092.90',
+    '27/10/2026,UPI-APOLLO PHARMACY-APOLLO@ICICI,430.00,,77662.90',
+    '27/10/2026,POS AMAZON PAY INDIA,"1,199.00",,76463.90',
+    '27/10/2026,UPI-SWIGGY-SWIGGY@ICICI,365.00,,76098.90',
+    '27/10/2026,BILL PAY AIRTEL POSTPAID,799.00,,75299.90',
+  ].join('\n'),
+};

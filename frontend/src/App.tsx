@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { AppShell } from './components/AppShell/AppShell';
 import { Button } from './components/Button/Button';
@@ -8,6 +8,7 @@ import { UndoToast } from './components/UndoToast/UndoToast';
 import { reportingPeriod } from './data/mockData';
 import { transactions as sampleTransactions } from './data/transactions';
 import { describeChange, useTransactionEdits } from './hooks/useTransactionEdits';
+import { ImportPage } from './pages/Import/ImportPage';
 import { OverviewPage } from './pages/Overview/OverviewPage';
 import { TransactionsPage } from './pages/Transactions/TransactionsPage';
 import './App.css';
@@ -16,20 +17,41 @@ const allNavItems = [...primaryNav, ...utilityNav];
 
 export default function App() {
   const [activeId, setActiveId] = useState<NavId>('overview');
+  /** The import flow lives inside Transactions, so this only matters on that screen. */
+  const [importing, setImporting] = useState(false);
   const { transactions, rules, lastChange, saveTransaction, undo, dismiss } =
     useTransactionEdits(sampleTransactions);
 
   const activeItem = allNavItems.find((item) => item.id === activeId) ?? primaryNav[0];
   const isOverview = activeId === 'overview';
-  const showsSampleData = isOverview || activeId === 'transactions';
+  const isTransactions = activeId === 'transactions';
+  const showImport = isTransactions && importing;
+  const showsSampleData = (isOverview || isTransactions) && !showImport;
+
+  // Any move to another screen starts at the top of the page.
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [activeId, importing]);
+
+  const navigate = (id: NavId) => {
+    setActiveId(id);
+    setImporting(false);
+  };
+
+  const startImport = () => {
+    setActiveId('transactions');
+    setImporting(true);
+  };
 
   const renderPage = () => {
+    if (showImport) return <ImportPage />;
+
     switch (activeId) {
       case 'overview':
         return (
           <OverviewPage
             transactions={transactions}
-            onViewAllTransactions={() => setActiveId('transactions')}
+            onViewAllTransactions={() => navigate('transactions')}
           />
         );
       case 'transactions':
@@ -45,23 +67,32 @@ export default function App() {
     }
   };
 
+  const renderAction = () => {
+    if (showImport) {
+      return (
+        <Button variant="secondary" onClick={() => setImporting(false)}>
+          Back to transactions
+        </Button>
+      );
+    }
+    if (isOverview || isTransactions) {
+      return (
+        <Button icon={<Upload size={18} strokeWidth={1.75} />} onClick={startImport}>
+          Import statement
+        </Button>
+      );
+    }
+    return undefined;
+  };
+
   return (
     <>
-      <AppShell activeId={activeId} onNavigate={setActiveId}>
+      <AppShell activeId={activeId} onNavigate={navigate}>
         <PageHeader
-          title={activeItem.label}
+          title={showImport ? 'Import statement' : activeItem.label}
           period={showsSampleData ? reportingPeriod.label : undefined}
           sampleData={showsSampleData}
-          action={
-            isOverview ? (
-              <Button
-                icon={<Upload size={18} strokeWidth={1.75} />}
-                onClick={() => setActiveId('transactions')}
-              >
-                Import statement
-              </Button>
-            ) : undefined
-          }
+          action={renderAction()}
         />
         {renderPage()}
       </AppShell>

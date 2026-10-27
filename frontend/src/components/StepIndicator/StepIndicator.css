@@ -1,0 +1,86 @@
+.steps {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.steps__item {
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.steps__item:last-child {
+  flex: 0 0 auto;
+}
+
+/* The line to the next step. */
+.steps__item:not(:last-child)::after {
+  content: '';
+  flex: 1;
+  min-width: 12px;
+  height: 2px;
+  margin-inline: var(--space-3);
+  border-radius: 1px;
+  background: var(--color-border);
+}
+
+.steps__item--done:not(:last-child)::after {
+  background: var(--color-primary);
+}
+
+/* Circular markers match the sidebar icons: filled for current, a check for finished. */
+.steps__marker {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-surface-soft);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.steps__item--current .steps__marker {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.steps__item--done .steps__marker {
+  border-color: var(--color-primary-tint);
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+}
+
+.steps__label {
+  font-size: var(--text-row);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.steps__item--current .steps__label {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* On narrow screens only the current label is shown. Others stay available to screen readers. */
+@media (max-width: 479px) {
+  .steps__item:not(.steps__item--current) .steps__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
