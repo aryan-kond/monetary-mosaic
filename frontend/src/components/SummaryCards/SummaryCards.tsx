@@ -43,15 +43,14 @@ function getBudgetStatus(percentUsed: number): {
   return { badge: { tone: 'positive', text: 'On track' }, progressTone: undefined };
 }
 
-export function SummaryCards() {
-  const {
-    totalSpent,
-    previousTotalSpent,
-    totalIncome,
-    previousTotalIncome,
-    monthlyBudget,
-    previousPeriodShort,
-  } = summaryData;
+interface SummaryCardsProps {
+  totalSpent: number;
+  totalIncome: number;
+}
+
+export function SummaryCards({ totalSpent, totalIncome }: SummaryCardsProps) {
+  const { previousTotalSpent, previousTotalIncome, monthlyBudget, previousPeriodShort } =
+    summaryData;
 
   const netCashFlow = totalIncome - totalSpent;
   const previousNetCashFlow = previousTotalIncome - previousTotalSpent;

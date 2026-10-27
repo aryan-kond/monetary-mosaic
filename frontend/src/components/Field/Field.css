@@ -67,3 +67,64 @@
   right: var(--space-4);
   left: auto;
 }
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  cursor: pointer;
+}
+
+.checkbox__input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 1px 0 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.checkbox__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.checkbox__label {
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.checkbox__hint {
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+.field__prefix {
+  position: absolute;
+  top: 50%;
+  left: var(--space-4);
+  font-size: var(--text-control);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.field__control--with-prefix {
+  padding-left: 36px;
+}
+
+.field__hint {
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+/* Errors say what is wrong in words, so they never rely on color alone. */
+.field__error {
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--color-negative);
+}
+
+.field__control[aria-invalid='true'] {
+  border-color: var(--color-negative);
+}

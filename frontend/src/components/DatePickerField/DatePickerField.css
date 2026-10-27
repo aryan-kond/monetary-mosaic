@@ -1,0 +1,176 @@
+/* The field itself looks like the other inputs, but opens the calendar. */
+.date-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: left;
+  cursor: pointer;
+}
+
+.date-trigger svg {
+  flex: none;
+  color: var(--color-text-secondary);
+}
+
+.date-trigger[aria-expanded='true'] {
+  border-color: var(--color-primary);
+}
+
+/* The calendar is a native popover, so it floats above the dialog and is never clipped. */
+.calendar {
+  inset: auto;
+  width: min(21rem, calc(100vw - 32px));
+  margin: 0;
+  padding: var(--space-4);
+  overflow: visible;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-dialog);
+  background: var(--color-canvas);
+  color: var(--color-text-body);
+  box-shadow: var(--shadow-overlay);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    overlay var(--duration-fast) allow-discrete,
+    display var(--duration-fast) allow-discrete;
+}
+
+/* Hidden until it has been placed, so it never flashes in the wrong spot. */
+.calendar:not([data-positioned]) {
+  visibility: hidden;
+}
+
+.calendar:popover-open {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .calendar:popover-open {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.calendar__title {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.calendar__nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.calendar__nav-button {
+  width: 40px;
+  height: 40px;
+}
+
+.calendar__grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.calendar__row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.calendar__row > [role='gridcell'] {
+  display: grid;
+  place-items: center;
+}
+
+.calendar__weekday {
+  padding: var(--space-1) 0;
+  text-align: center;
+  font-size: var(--text-meta);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.calendar__day {
+  width: 40px;
+  height: 40px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-row);
+  color: var(--color-text-body);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.calendar__day:hover {
+  background: var(--color-surface-soft);
+}
+
+/* Days that count in the Overview are softly shaded. Selected and today use other cues too. */
+.calendar__day--period {
+  background: var(--color-primary-tint);
+}
+
+.calendar__day--period:hover {
+  background: color-mix(in srgb, var(--color-primary) 16%, #ffffff);
+}
+
+.calendar__day--outside {
+  color: var(--color-text-muted);
+}
+
+.calendar__day--today {
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1.5px var(--color-primary);
+}
+
+.calendar__day--selected,
+.calendar__day--selected:hover {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.calendar__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.calendar__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-meta);
+  color: var(--color-text-secondary);
+}
+
+.calendar__swatch {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary-tint);
+}

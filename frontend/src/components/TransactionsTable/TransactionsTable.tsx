@@ -2,6 +2,7 @@ import { categories } from '../../data/categories';
 import type { Transaction } from '../../data/transactions';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatShortDate } from '../../utils/formatDate';
+import { Button } from '../Button/Button';
 import { Chip } from '../Chip/Chip';
 import './TransactionsTable.css';
 
@@ -9,13 +10,23 @@ interface TransactionsTableProps {
   transactions: Transaction[];
   /** Read by screen readers only. */
   caption: string;
+  /** When given, every row gets an Edit button (Review when the category is uncertain). */
+  onEdit?: (transaction: Transaction) => void;
 }
 
-export function TransactionsTable({ transactions, caption }: TransactionsTableProps) {
+export function TransactionsTable({ transactions, caption, onEdit }: TransactionsTableProps) {
   return (
     <div className="txn-table-wrap">
       <table className="txn-table">
         <caption className="visually-hidden">{caption}</caption>
+        {/* The four data columns share the width equally. The button column is fixed. */}
+        <colgroup>
+          <col />
+          <col />
+          <col className="txn-table__col-category" />
+          <col />
+          {onEdit && <col className="txn-table__col-action" />}
+        </colgroup>
         <thead>
           <tr>
             <th scope="col">Merchant</th>
@@ -28,6 +39,11 @@ export function TransactionsTable({ transactions, caption }: TransactionsTablePr
             <th scope="col" className="txn-table__amount">
               Amount
             </th>
+            {onEdit && (
+              <th scope="col">
+                <span className="visually-hidden">Actions</span>
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -35,6 +51,7 @@ export function TransactionsTable({ transactions, caption }: TransactionsTablePr
             const category = categories[transaction.categoryId];
             const date = formatShortDate(transaction.date);
             const isIncome = transaction.direction === 'in';
+            const actionLabel = transaction.needsReview ? 'Review' : 'Edit';
 
             return (
               <tr key={transaction.id}>
@@ -50,8 +67,8 @@ export function TransactionsTable({ transactions, caption }: TransactionsTablePr
                   <time dateTime={transaction.date}>{date}</time>
                 </td>
                 <td className="txn-table__category">
-                  <div className="txn-table__chips">
-                    <Chip>{category.label}</Chip>
+                  <div className="txn-table__category-cell">
+                    <span>{category.label}</span>
                     {transaction.needsReview && <Chip tone="warning">Needs review</Chip>}
                   </div>
                 </td>
@@ -65,6 +82,19 @@ export function TransactionsTable({ transactions, caption }: TransactionsTablePr
                     formatCurrency(transaction.amount)
                   )}
                 </td>
+                {onEdit && (
+                  <td>
+                    <Button
+                      variant="secondary"
+                      size="compact"
+                      className="txn-table__edit"
+                      aria-label={`${actionLabel} ${transaction.merchant} transaction`}
+                      onClick={() => onEdit(transaction)}
+                    >
+                      {actionLabel}
+                    </Button>
+                  </td>
+                )}
               </tr>
             );
           })}

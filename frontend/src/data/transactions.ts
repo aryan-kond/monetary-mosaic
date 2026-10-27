@@ -85,12 +85,3 @@ export const transactions: Transaction[] = rows.map(
     needsReview: flag === 'review',
   }),
 );
-
-/** The most recent transaction date. Date ranges are counted back from here. */
-export const latestTransactionDate = transactions.reduce(
-  (latest, transaction) => (transaction.date > latest ? transaction.date : latest),
-  '',
-);
-
-/** The latest few, shown on the Overview. */
-export const recentTransactions = transactions.slice(0, 8);

@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Button } from '../../components/Button/Button';
 import { Card } from '../../components/Card/Card';
+import { EditTransactionDialog } from '../../components/EditTransactionDialog/EditTransactionDialog';
 import { SearchField } from '../../components/Field/SearchField';
 import { SelectField, type SelectOption } from '../../components/Field/SelectField';
 import { TransactionsTable } from '../../components/TransactionsTable/TransactionsTable';
 import { categories, type CategoryId } from '../../data/categories';
-import { latestTransactionDate, transactions } from '../../data/transactions';
+import { reportingPeriod } from '../../data/mockData';
+import type { Transaction } from '../../data/transactions';
+import type { TransactionDetails } from '../../hooks/useTransactionEdits';
 import { formatShortDate } from '../../utils/formatDate';
 import {
   emptyFilters,
@@ -39,18 +42,45 @@ const dateOptions: SelectOption[] = [
   { value: '14d', label: 'Last 14 days' },
 ];
 
-export function TransactionsPage() {
+interface TransactionsPageProps {
+  transactions: Transaction[];
+  /** Categories the person chose to remember, keyed by merchant. */
+  rules: Record<string, CategoryId>;
+  onSaveTransaction: (
+    transactionId: string,
+    details: TransactionDetails,
+    rememberRule: boolean,
+  ) => void;
+}
+
+export function TransactionsPage({
+  transactions,
+  rules,
+  onSaveTransaction,
+}: TransactionsPageProps) {
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [sortValue, setSortValue] = useState(defaultSortValue);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  // The transaction being edited is copied when the dialog opens, so its content stays steady
+  // while the dialog fades out after saving.
+  const [editing, setEditing] = useState<Transaction | undefined>();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogSession, setDialogSession] = useState(0);
+
+  // Date ranges count back from the most recent transaction.
+  const latestDate = transactions.reduce(
+    (latest, transaction) => (transaction.date > latest ? transaction.date : latest),
+    '',
+  );
+
   const matches = sortTransactions(
-    filterTransactions(transactions, filters, latestTransactionDate),
+    filterTransactions(transactions, filters, latestDate),
     findSort(sortValue),
   );
   const visible = matches.slice(0, visibleCount);
   const filtersActive = hasActiveFilters(filters);
-  const dateStart = rangeStart(filters.dateRange, latestTransactionDate);
+  const dateStart = latestDate ? rangeStart(filters.dateRange, latestDate) : null;
 
   // Any change to the filters or the sort starts the list again from the top.
   const updateFilters = (changes: Partial<Filters>) => {
@@ -68,18 +98,31 @@ export function TransactionsPage() {
     setVisibleCount(PAGE_SIZE);
   };
 
+  const openEditor = (transaction: Transaction) => {
+    setEditing(transaction);
+    setDialogSession((session) => session + 1);
+    setDialogOpen(true);
+  };
+
+  const closeEditor = () => setDialogOpen(false);
+
+  const saveEditor = (details: TransactionDetails, rememberRule: boolean) => {
+    if (editing) onSaveTransaction(editing.id, details, rememberRule);
+    setDialogOpen(false);
+  };
+
   const summary = filtersActive
     ? `${matches.length} of ${transactions.length} transactions match`
     : `${transactions.length} transactions`;
   const rangeNote = dateStart
-    ? `, from ${formatShortDate(dateStart)} to ${formatShortDate(latestTransactionDate)}`
+    ? `, from ${formatShortDate(dateStart)} to ${formatShortDate(latestDate)}`
     : '';
 
   return (
     <div className="txn-page">
       <Card
         title="All transactions"
-        description="Sample data. Categories are assigned automatically."
+        description="Sample data. Categories are assigned automatically, and every detail can be corrected."
       >
         <div className="txn-toolbar">
           <SearchField
@@ -132,7 +175,11 @@ export function TransactionsPage() {
           </div>
         ) : (
           <>
-            <TransactionsTable transactions={visible} caption="Transactions (sample data)" />
+            <TransactionsTable
+              transactions={visible}
+              caption="Transactions (sample data)"
+              onEdit={openEditor}
+            />
             {matches.length > visible.length && (
               <div className="txn-more">
                 <p>
@@ -149,6 +196,16 @@ export function TransactionsPage() {
           </>
         )}
       </Card>
+
+      <EditTransactionDialog
+        open={dialogOpen}
+        session={dialogSession}
+        transaction={editing}
+        rules={rules}
+        period={reportingPeriod}
+        onClose={closeEditor}
+        onSave={saveEditor}
+      />
     </div>
   );
 }

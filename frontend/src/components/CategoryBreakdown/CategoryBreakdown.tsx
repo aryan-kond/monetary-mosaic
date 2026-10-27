@@ -1,13 +1,9 @@
-import { categories, type CategoryId } from '../../data/categories';
+import { categories } from '../../data/categories';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { Card } from '../Card/Card';
 import { Chip } from '../Chip/Chip';
 import './CategoryBreakdown.css';
-
-export interface CategorySpend {
-  categoryId: CategoryId;
-  amount: number;
-}
+import type { CategorySpend } from '../../utils/spending';
 
 interface CategoryBreakdownProps {
   spending: CategorySpend[];

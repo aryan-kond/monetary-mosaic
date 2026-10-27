@@ -1,4 +1,4 @@
-import type { Insight } from '../../data/mockData';
+import type { Insight } from '../../utils/insights';
 import { Card } from '../Card/Card';
 import { Chip } from '../Chip/Chip';
 import './InsightsCard.css';
