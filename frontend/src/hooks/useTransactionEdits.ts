@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { categories, type CategoryId } from '../data/categories';
 import type { Transaction } from '../data/transactions';
+import { formatCurrency } from '../utils/formatCurrency';
+import { formatShortDate } from '../utils/formatDate';
 
 /** The details a person can edit. */
 export interface TransactionDetails {
@@ -14,6 +16,8 @@ export interface TransactionDetails {
 
 /** What was changed last, kept so the change can be undone. */
 export interface TransactionEdit {
+  /** Increases with every edit, so the toast can tell two similar edits apart. */
+  id: number;
   before: Transaction;
   after: TransactionDetails;
   /** Present when the person chose to remember this category for the merchant. */
@@ -24,7 +28,7 @@ export const ruleKey = (merchant: string) => merchant.trim().toLowerCase();
 
 const listFormat = new Intl.ListFormat('en-IN', { style: 'long', type: 'conjunction' });
 
-/** Plain-language confirmation shown after a change. */
+/** Plain-language confirmation that says what changed. */
 export function describeChange({ before, after, rule }: TransactionEdit): string {
   const changed: string[] = [];
   if (before.merchant !== after.merchant) changed.push('merchant');
@@ -32,17 +36,32 @@ export function describeChange({ before, after, rule }: TransactionEdit): string
   if (before.amount !== after.amount) changed.push('amount');
   if (before.categoryId !== after.categoryId) changed.push('category');
 
-  const label = categories[after.categoryId].label;
+  const newLabel = categories[after.categoryId].label;
   let base: string;
+
   if (changed.length === 0) {
-    base = `Confirmed ${label} for ${after.merchant}.`;
-  } else if (changed.length === 1 && changed[0] === 'category') {
-    base = `Moved ${after.merchant} to ${label}.`;
+    base = before.needsReview
+      ? `Confirmed ${newLabel} for ${after.merchant}.`
+      : `Kept ${newLabel} for ${after.merchant}.`;
+  } else if (changed.length > 1) {
+    base = `Updated ${after.merchant}: ${listFormat.format(changed)}.`;
   } else {
-    base = `Updated ${listFormat.format(changed)} for ${after.merchant}.`;
+    switch (changed[0]) {
+      case 'merchant':
+        base = `Renamed ${before.merchant} to ${after.merchant}.`;
+        break;
+      case 'date':
+        base = `${after.merchant} date changed from ${formatShortDate(before.date)} to ${formatShortDate(after.date)}.`;
+        break;
+      case 'amount':
+        base = `${after.merchant} amount changed from ${formatCurrency(before.amount)} to ${formatCurrency(after.amount)}.`;
+        break;
+      default:
+        base = `${after.merchant} moved from ${categories[before.categoryId].label} to ${newLabel}.`;
+    }
   }
 
-  return rule ? `${base} Future ${after.merchant} transactions will use ${label}.` : base;
+  return rule ? `${base} Future ${after.merchant} transactions will use ${newLabel}.` : base;
 }
 
 /**
@@ -53,6 +72,7 @@ export function useTransactionEdits(initial: Transaction[]) {
   const [transactions, setTransactions] = useState(initial);
   const [rules, setRules] = useState<Record<string, CategoryId>>({});
   const [lastChange, setLastChange] = useState<TransactionEdit | null>(null);
+  const editCount = useRef(0);
 
   const saveTransaction = (
     transactionId: string,
@@ -73,7 +93,9 @@ export function useTransactionEdits(initial: Transaction[]) {
     if (rememberRule) {
       setRules((current) => ({ ...current, [key]: details.categoryId }));
     }
+    editCount.current += 1;
     setLastChange({
+      id: editCount.current,
       before: target,
       after: details,
       rule: rememberRule ? { key, previous: rules[key] } : undefined,

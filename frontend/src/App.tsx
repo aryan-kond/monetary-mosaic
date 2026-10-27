@@ -67,6 +67,7 @@ export default function App() {
       </AppShell>
       <UndoToast
         message={lastChange ? describeChange(lastChange) : null}
+        messageId={lastChange?.id ?? null}
         onUndo={undo}
         onDismiss={dismiss}
       />
