@@ -27,3 +27,14 @@ export function formatCurrency(amount: number, options: { signed?: boolean } = {
 export function formatCompactCurrency(amount: number): string {
   return compactCurrencyFormat.format(amount);
 }
+const exactCurrencyFormat = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** Always shows paise, for example ₹312.40. Used where the exact amount from a file matters. */
+export function formatExactCurrency(amount: number): string {
+  return exactCurrencyFormat.format(amount);
+}

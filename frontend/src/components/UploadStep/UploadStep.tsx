@@ -13,11 +13,20 @@ interface UploadStepProps {
   parsed: ParsedCsv | null;
   onParsed: (parsed: ParsedCsv) => void;
   onClear: () => void;
+  onContinue: () => void;
 }
 
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
 
-function FileSummary({ parsed, onClear }: { parsed: ParsedCsv; onClear: () => void }) {
+function FileSummary({
+  parsed,
+  onClear,
+  onContinue,
+}: {
+  parsed: ParsedCsv;
+  onClear: () => void;
+  onContinue: () => void;
+}) {
   return (
     <div className="file-summary">
       <div className="file-summary__head">
@@ -43,17 +52,13 @@ function FileSummary({ parsed, onClear }: { parsed: ParsedCsv; onClear: () => vo
         <Button variant="secondary" onClick={onClear}>
           Choose a different file
         </Button>
-        <Button disabled>Continue</Button>
+        <Button onClick={onContinue}>Continue</Button>
       </div>
-      <p className="upload__hint">
-        Matching your columns to dates, descriptions, and amounts is the next step. It is coming
-        soon, so Continue stays off for now.
-      </p>
     </div>
   );
 }
 
-export function UploadStep({ parsed, onParsed, onClear }: UploadStepProps) {
+export function UploadStep({ parsed, onParsed, onClear, onContinue }: UploadStepProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [reading, setReading] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -136,7 +141,7 @@ export function UploadStep({ parsed, onParsed, onClear }: UploadStepProps) {
     <div className="upload">
       <div className="upload__main">
         {parsed ? (
-          <FileSummary parsed={parsed} onClear={onClear} />
+          <FileSummary parsed={parsed} onClear={onClear} onContinue={onContinue} />
         ) : (
           <>
             <div

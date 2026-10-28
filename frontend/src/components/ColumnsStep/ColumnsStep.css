@@ -1,0 +1,198 @@
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Words carry the meaning. The tint only reinforces it. */
+.match-banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  font-size: var(--text-row);
+  color: var(--color-text-body);
+}
+
+.match-banner--ok {
+  border: 1px solid var(--color-positive);
+  background: var(--color-positive-tint);
+}
+
+.match-banner--check,
+.match-banner--help {
+  border: 1px solid var(--color-warning);
+  background: var(--color-warning-tint);
+}
+
+.match-banner__title {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.match-banner__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-4);
+}
+
+/* Container query: the layout follows the width of the import page. */
+.columns__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4) var(--space-6);
+}
+
+@container (min-width: 720px) {
+  .columns__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .columns__wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.preview__title {
+  font-size: var(--text-card-heading);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* No horizontal scrolling. The frame only rounds the corners. */
+.preview__frame {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+}
+
+.preview__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-row);
+}
+
+.preview__table th,
+.preview__table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.preview__table thead th {
+  background: var(--color-surface-soft);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.preview__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* The description takes the leftover width and ends in an ellipsis, so nothing overflows. */
+.preview__table td.preview__description {
+  width: 100%;
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Narrow: each row becomes a small stack. The text stays 14 to 15 px, as in the guidelines. */
+@container (max-width: 719px) {
+  .preview__table,
+  .preview__table tbody {
+    display: block;
+  }
+
+  /* The column names stay available to screen readers. */
+  .preview__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .preview__table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'description amount'
+      'date type';
+    gap: var(--space-1) var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .preview__table tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .preview__table tbody td {
+    padding: 0;
+    border: 0;
+    white-space: normal;
+  }
+
+  .preview__table td.preview__description {
+    grid-area: description;
+    width: auto;
+    max-width: none;
+    overflow: visible;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+    color: var(--color-text-primary);
+  }
+
+  .preview__table td.preview__amount {
+    grid-area: amount;
+    text-align: right;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .preview__table td.preview__date {
+    grid-area: date;
+    font-size: var(--text-label);
+    color: var(--color-text-secondary);
+  }
+
+  .preview__table td.preview__type {
+    grid-area: type;
+    text-align: right;
+    font-size: var(--text-label);
+    color: var(--color-text-secondary);
+  }
+}
+
+.preview__empty {
+  font-size: var(--text-row);
+  color: var(--color-text-secondary);
+}
+
+.preview__note {
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+.columns__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

@@ -4,3 +4,10 @@
   gap: var(--space-6);
   container-type: inline-size;
 }
+.import-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  font-size: var(--text-row);
+  color: var(--color-text-secondary);
+}
