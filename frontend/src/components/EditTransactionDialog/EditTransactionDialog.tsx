@@ -67,7 +67,7 @@ function EditTransactionForm({ transaction, rules, period, onCancel, onSave }: F
   const hasChanges =
     merchant.trim() !== transaction.merchant ||
     date !== transaction.date ||
-    cleanAmount(amount) !== String(transaction.amount) ||
+    Number(cleanAmount(amount)) !== transaction.amount ||
     categoryId !== transaction.categoryId;
   const canSave = hasChanges || needsReview || rememberRule;
   const saveLabel = !hasChanges && needsReview ? 'Confirm category' : 'Save changes';
