@@ -18,6 +18,8 @@ interface SelectFieldProps {
   error?: string;
   /** Shown beside the label, for example a status chip. */
   badge?: ReactNode;
+  /** Keeps the label for screen readers but hides it on screen, for selects inside tables. */
+  hideLabel?: boolean;
 }
 
 /** A native select, so it works with every keyboard, screen reader, and phone picker. */
@@ -29,6 +31,7 @@ export function SelectField({
   hint,
   error,
   badge,
+  hideLabel,
 }: SelectFieldProps) {
   const id = useId();
   const hintId = `${id}-hint`;
@@ -38,7 +41,7 @@ export function SelectField({
   return (
     <div className="field">
       <div className="field__label-row">
-        <label className="field__label" htmlFor={id}>
+        <label className={hideLabel ? 'field__label visually-hidden' : 'field__label'} htmlFor={id}>
           {label}
         </label>
         {badge}

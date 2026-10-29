@@ -61,3 +61,14 @@
   height: 40px;
   padding: 0 var(--space-4);
 }
+/* A toggle button that is switched on. The check mark means it never relies on color alone. */
+.button--secondary[aria-pressed='true']:not(:disabled) {
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
+.button[aria-pressed='true']::before {
+  content: '✓';
+  font-weight: 700;
+}

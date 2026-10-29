@@ -19,7 +19,7 @@ export default function App() {
   const [activeId, setActiveId] = useState<NavId>('overview');
   /** The import flow lives inside Transactions, so this only matters on that screen. */
   const [importing, setImporting] = useState(false);
-  const { transactions, rules, lastChange, saveTransaction, undo, dismiss } =
+  const { transactions, rules, lastChange, saveTransaction, addTransactions, undo, dismiss } =
     useTransactionEdits(sampleTransactions);
 
   const activeItem = allNavItems.find((item) => item.id === activeId) ?? primaryNav[0];
@@ -44,7 +44,16 @@ export default function App() {
   };
 
   const renderPage = () => {
-    if (showImport) return <ImportPage />;
+    if (showImport) {
+      return (
+        <ImportPage
+          transactions={transactions}
+          rules={rules}
+          onImport={addTransactions}
+          onViewTransactions={() => setImporting(false)}
+        />
+      );
+    }
 
     switch (activeId) {
       case 'overview':

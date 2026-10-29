@@ -3,6 +3,7 @@ import { categories, type CategoryId } from '../data/categories';
 import type { Transaction } from '../data/transactions';
 import { formatCurrency } from '../utils/formatCurrency';
 import { formatShortDate } from '../utils/formatDate';
+import { ruleKey } from '../utils/merchantRules';
 
 /** The details a person can edit. */
 export interface TransactionDetails {
@@ -24,7 +25,7 @@ export interface TransactionEdit {
   rule?: { key: string; previous?: CategoryId };
 }
 
-export const ruleKey = (merchant: string) => merchant.trim().toLowerCase();
+export { ruleKey };
 
 const listFormat = new Intl.ListFormat('en-IN', { style: 'long', type: 'conjunction' });
 
@@ -73,6 +74,16 @@ export function useTransactionEdits(initial: Transaction[]) {
   const [rules, setRules] = useState<Record<string, CategoryId>>({});
   const [lastChange, setLastChange] = useState<TransactionEdit | null>(null);
   const editCount = useRef(0);
+  const importedCount = useRef(0);
+
+  /** Adds imported transactions. Each one gets its own id. */
+  const addTransactions = (incoming: Omit<Transaction, 'id'>[]) => {
+    const added = incoming.map((transaction) => {
+      importedCount.current += 1;
+      return { ...transaction, id: `imp-${importedCount.current}` };
+    });
+    setTransactions((list) => [...list, ...added]);
+  };
 
   const saveTransaction = (
     transactionId: string,
@@ -125,5 +136,5 @@ export function useTransactionEdits(initial: Transaction[]) {
 
   const dismiss = () => setLastChange(null);
 
-  return { transactions, rules, lastChange, saveTransaction, undo, dismiss };
+  return { transactions, rules, lastChange, saveTransaction, addTransactions, undo, dismiss };
 }

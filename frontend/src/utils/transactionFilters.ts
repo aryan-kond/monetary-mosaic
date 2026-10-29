@@ -36,13 +36,19 @@ export function filterTransactions(
   const query = filters.query.trim().toLowerCase();
   const digits = query.replace(/\D/g, '');
   const isAmountSearch = digits !== '' && /^[\d,.\s₹]+$/.test(query);
+  const amountQuery = query.replace(/[,\s₹]/g, '');
   const start = rangeStart(filters.dateRange, latestDate);
 
   return transactions.filter((transaction) => {
     if (filters.categoryId !== 'all' && transaction.categoryId !== filters.categoryId) return false;
     if (start && transaction.date < start) return false;
     if (query === '') return true;
-    if (isAmountSearch) return String(transaction.amount).includes(digits);
+    if (isAmountSearch) {
+      return (
+        String(transaction.amount).includes(amountQuery) ||
+        transaction.amount.toFixed(2).includes(amountQuery)
+      );
+    }
     return (
       transaction.merchant.toLowerCase().includes(query) ||
       categories[transaction.categoryId].label.toLowerCase().includes(query)

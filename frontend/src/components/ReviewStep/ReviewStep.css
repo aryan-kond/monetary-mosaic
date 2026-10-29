@@ -1,0 +1,366 @@
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Words carry the meaning. The tint only reinforces it. */
+.review-banner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  font-size: var(--text-row);
+  color: var(--color-text-body);
+}
+
+.review-banner--ok {
+  border: 1px solid var(--color-positive);
+  background: var(--color-positive-tint);
+}
+
+.review-banner--check,
+.review-banner--help {
+  border: 1px solid var(--color-warning);
+  background: var(--color-warning-tint);
+}
+
+.review-banner__title {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.review-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+@container (min-width: 720px) {
+  .review-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.review-summary > div {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-soft);
+}
+
+.review-summary dt {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.review-summary dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-section);
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+}
+
+.review-summary .review-summary__small {
+  font-size: var(--text-card-heading);
+}
+
+.review-summary__sub {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.review-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.review-section__title {
+  font-size: var(--text-card-heading);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.review-section__title:focus {
+  outline: none;
+}
+
+.review-section__text {
+  font-size: var(--text-row);
+  color: var(--color-text-secondary);
+}
+
+/* Rows we cannot read */
+.excluded-list,
+.duplicate-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+  list-style: none;
+}
+
+.excluded-list__item,
+.duplicate-list__item {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.excluded-list__item:first-child,
+.duplicate-list__item:first-child {
+  border-top: 0;
+}
+
+.excluded-list__reason {
+  font-size: var(--text-row);
+  color: var(--color-text-primary);
+}
+
+.excluded-list__preview {
+  margin-top: 2px;
+  font-size: var(--text-label);
+  overflow-wrap: anywhere;
+  color: var(--color-text-secondary);
+}
+
+/* Possible duplicates */
+.review-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.duplicate-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+}
+
+.duplicate-list__info {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.duplicate-list__title {
+  font-size: var(--text-row);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.duplicate-list__detail {
+  margin-top: 2px;
+  font-size: var(--text-label);
+  overflow-wrap: anywhere;
+  color: var(--color-text-secondary);
+}
+
+.duplicate-list__pending {
+  margin-top: var(--space-1);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+.duplicate-list__choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Transactions to import */
+.review-table-wrap {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-input);
+}
+
+.review-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--text-row);
+}
+
+.review-table__col-date {
+  width: 6rem;
+}
+
+.review-table__col-category {
+  width: 12rem;
+}
+
+.review-table__col-amount {
+  width: 8rem;
+}
+
+.review-table__col-status {
+  width: 9.5rem;
+}
+
+.review-table th,
+.review-table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.review-table thead th {
+  background: var(--color-surface-soft);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.review-table thead th:first-child {
+  border-top-left-radius: var(--radius-input);
+}
+
+.review-table thead th:last-child {
+  border-top-right-radius: var(--radius-input);
+}
+
+.review-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.review-table td.review-table__date {
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.review-table__name {
+  display: block;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+}
+
+.review-table__original {
+  display: block;
+  overflow: hidden;
+  font-size: var(--text-meta);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+.review-table td.review-table__amount {
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+/* Income is marked with a plus sign and a hidden "Income" label, not color alone. */
+.review-table__income {
+  font-weight: 600;
+  color: var(--color-positive);
+}
+
+.review-table .field__control {
+  height: 40px;
+  font-size: var(--text-row);
+}
+
+.review-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+.review__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.review__hint {
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+/* Narrow: each row becomes a small stack. The text stays 14 to 15 px, as in the guidelines. */
+@container (max-width: 859px) {
+  .review-table,
+  .review-table tbody {
+    display: block;
+  }
+
+  .review-table colgroup {
+    display: none;
+  }
+
+  /* The column names stay available to screen readers. */
+  .review-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .review-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'merchant amount'
+      'date status'
+      'category category';
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .review-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+
+  .review-table tbody td {
+    padding: 0;
+    border: 0;
+  }
+
+  .review-table td.review-table__merchant {
+    grid-area: merchant;
+  }
+
+  .review-table td.review-table__amount {
+    grid-area: amount;
+    text-align: right;
+  }
+
+  .review-table td.review-table__date {
+    grid-area: date;
+    font-size: var(--text-label);
+  }
+
+  .review-table td.review-table__status {
+    grid-area: status;
+    justify-self: end;
+  }
+
+  .review-table td.review-table__category {
+    grid-area: category;
+  }
+}

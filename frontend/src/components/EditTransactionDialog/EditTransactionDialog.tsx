@@ -30,14 +30,17 @@ interface Errors {
 
 /** People may type commas or a ₹ sign, so strip them before reading the number. */
 const cleanAmount = (value: string) => value.replace(/[,\s₹]/g, '');
+/** Shows paise only when there are some, so 620 stays 620 and 312.4 becomes 312.40. */
+const amountToInput = (amount: number) =>
+  Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
 
 function validate(merchant: string, amount: string): Errors {
   const errors: Errors = {};
   const digits = cleanAmount(amount);
 
   if (merchant.trim() === '') errors.merchant = 'Enter a merchant or description.';
-  if (!/^\d{1,9}$/.test(digits) || Number(digits) <= 0) {
-    errors.amount = 'Enter an amount in whole rupees, for example 1250.';
+  if (!/^\d{1,9}(\.\d{1,2})?$/.test(digits) || Number(digits) <= 0) {
+    errors.amount = 'Enter an amount in rupees, for example 1250 or 312.40.';
   }
   return errors;
 }
@@ -54,7 +57,7 @@ function EditTransactionForm({ transaction, rules, period, onCancel, onSave }: F
   const isIncome = transaction.direction === 'in';
   const [merchant, setMerchant] = useState(transaction.merchant);
   const [date, setDate] = useState(transaction.date);
-  const [amount, setAmount] = useState(String(transaction.amount));
+  const [amount, setAmount] = useState(amountToInput(transaction.amount));
   const [categoryId, setCategoryId] = useState<CategoryId>(transaction.categoryId);
   const [rememberRule, setRememberRule] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
@@ -142,7 +145,7 @@ function EditTransactionForm({ transaction, rules, period, onCancel, onSave }: F
           inputMode="numeric"
           value={amount}
           error={errors.amount}
-          hint={errors.amount ? undefined : 'Whole rupees, for example 1250'}
+          hint={errors.amount ? undefined : 'In rupees, for example 1250 or 312.40'}
           onChange={(value) => {
             setAmount(value);
             clearError('amount');
