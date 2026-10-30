@@ -35,15 +35,19 @@ export interface TrendPeriod {
 
 interface SpendingTrendProps {
   current: TrendPeriod;
-  previous: TrendPeriod;
+  /** Null when there is no spending in the comparison period, so nothing is made up. */
+  previous: TrendPeriod | null;
+  /** Named in the card when there is nothing to compare with, for example "1–25 Sep". */
+  previousLabel: string;
 }
 
 interface TrendPoint {
   day: number;
   current: number;
-  previous: number;
+  /** Missing when the comparison month has no such day. */
+  previous?: number;
   currentDate: string;
-  previousDate: string;
+  previousDate?: string;
 }
 
 function toCumulative(daily: number[]): number[] {
@@ -54,19 +58,20 @@ function toCumulative(daily: number[]): number[] {
   });
 }
 
-/** Compares the same number of days in both periods, so the comparison is fair. */
-function buildPoints(current: TrendPeriod, previous: TrendPeriod): TrendPoint[] {
+function buildPoints(current: TrendPeriod, previous: TrendPeriod | null): TrendPoint[] {
   const currentTotals = toCumulative(current.daily);
-  const previousTotals = toCumulative(previous.daily);
-  const days = Math.min(currentTotals.length, previousTotals.length);
+  const previousTotals = previous ? toCumulative(previous.daily) : [];
 
-  return Array.from({ length: days }, (_, index) => ({
-    day: index + 1,
-    current: currentTotals[index],
-    previous: previousTotals[index],
-    currentDate: `${index + 1} ${current.month}`,
-    previousDate: `${index + 1} ${previous.month}`,
-  }));
+  return currentTotals.map((total, index) => {
+    const hasPrevious = previous !== null && index < previousTotals.length;
+    return {
+      day: index + 1,
+      current: total,
+      previous: hasPrevious ? previousTotals[index] : undefined,
+      currentDate: `${index + 1} ${current.month}`,
+      previousDate: hasPrevious ? `${index + 1} ${previous.month}` : undefined,
+    };
+  });
 }
 
 function LineSwatch({ color, dashed = false }: { color: string; dashed?: boolean }) {
@@ -95,11 +100,13 @@ function TrendTooltip({ point }: { point: TrendPoint }) {
         <span>{point.currentDate}</span>
         <strong className="tabular">{formatCurrency(point.current)}</strong>
       </p>
-      <p className="trend-tooltip__row">
-        <LineSwatch color={PREVIOUS_COLOR} dashed />
-        <span>{point.previousDate}</span>
-        <strong className="tabular">{formatCurrency(point.previous)}</strong>
-      </p>
+      {point.previous !== undefined && (
+        <p className="trend-tooltip__row">
+          <LineSwatch color={PREVIOUS_COLOR} dashed />
+          <span>{point.previousDate}</span>
+          <strong className="tabular">{formatCurrency(point.previous)}</strong>
+        </p>
+      )}
     </div>
   );
 }
@@ -114,7 +121,7 @@ function renderTrendTooltip({ active, payload }: TooltipRenderProps) {
   return <TrendTooltip point={payload[0].payload as TrendPoint} />;
 }
 
-export function SpendingTrend({ current, previous }: SpendingTrendProps) {
+export function SpendingTrend({ current, previous, previousLabel }: SpendingTrendProps) {
   const [showTable, setShowTable] = useState(false);
   const reducedMotion = useReducedMotion();
   const points = buildPoints(current, previous);
@@ -134,23 +141,34 @@ export function SpendingTrend({ current, previous }: SpendingTrendProps) {
   }
 
   const last = points[points.length - 1];
-  const change = last.previous === 0 ? 0 : ((last.current - last.previous) / last.previous) * 100;
+  const lastCompared = [...points].reverse().find((point) => point.previous !== undefined);
+  const compared =
+    lastCompared && lastCompared.previous
+      ? { day: lastCompared.day, current: lastCompared.current, previous: lastCompared.previous }
+      : null;
+  const change = compared
+    ? ((compared.current - compared.previous) / compared.previous) * 100
+    : null;
+
   const summary =
-    `Line chart of cumulative spending. By day ${last.day}, spending is ` +
-    `${formatCurrency(last.current)} in ${current.label}, compared with ` +
-    `${formatCurrency(last.previous)} in ${previous.label}, which is ` +
-    `${Math.abs(change).toFixed(1)}% ${change >= 0 ? 'higher' : 'lower'}.`;
+    compared && change !== null
+      ? `Line chart of cumulative spending. By day ${compared.day}, spending is ` +
+        `${formatCurrency(compared.current)} in ${current.label}, compared with ` +
+        `${formatCurrency(compared.previous)} in ${previous?.label ?? previousLabel}, which is ` +
+        `${Math.abs(change).toFixed(1)}% ${change >= 0 ? 'higher' : 'lower'}.`
+      : `Line chart of cumulative spending in ${current.label}. By day ${last.day}, spending is ` +
+        `${formatCurrency(last.current)}.`;
+
+  const description = previous
+    ? `Cumulative spending, ${current.label} compared with ${previous.label}`
+    : `Cumulative spending, ${current.label}. No spending found for ${previousLabel} to compare with.`;
 
   const ticks = points
     .map((point) => point.day)
-    .filter((day) => day === 1 || day % 5 === 0 || day === last.day);
+    .filter((day) => day === 1 || day % 5 === 0 || (day === last.day && day % 5 >= 3));
 
   return (
-    <Card
-      title="Spending trend"
-      description={`Cumulative spending, ${current.label} compared with ${previous.label}`}
-      action={toggle}
-    >
+    <Card title="Spending trend" description={description} action={toggle}>
       <ul className="trend__legend">
         <li className="trend__legend-item">
           <span className="trend__legend-label">
@@ -159,13 +177,17 @@ export function SpendingTrend({ current, previous }: SpendingTrendProps) {
           </span>
           <strong className="trend__legend-value tabular">{formatCurrency(last.current)}</strong>
         </li>
-        <li className="trend__legend-item">
-          <span className="trend__legend-label">
-            <LineSwatch color={PREVIOUS_COLOR} dashed />
-            {previous.label} ({previous.caption})
-          </span>
-          <strong className="trend__legend-value tabular">{formatCurrency(last.previous)}</strong>
-        </li>
+        {previous && compared && (
+          <li className="trend__legend-item">
+            <span className="trend__legend-label">
+              <LineSwatch color={PREVIOUS_COLOR} dashed />
+              {previous.label} ({previous.caption})
+            </span>
+            <strong className="trend__legend-value tabular">
+              {formatCurrency(compared.previous)}
+            </strong>
+          </li>
+        )}
       </ul>
 
       {showTable ? (
@@ -184,9 +206,11 @@ export function SpendingTrend({ current, previous }: SpendingTrendProps) {
                 <th scope="col" className="trend__num">
                   {current.label}
                 </th>
-                <th scope="col" className="trend__num">
-                  {previous.label}
-                </th>
+                {previous && (
+                  <th scope="col" className="trend__num">
+                    {previous.label}
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -194,7 +218,11 @@ export function SpendingTrend({ current, previous }: SpendingTrendProps) {
                 <tr key={point.day}>
                   <th scope="row">Day {point.day}</th>
                   <td className="trend__num tabular">{formatCurrency(point.current)}</td>
-                  <td className="trend__num tabular">{formatCurrency(point.previous)}</td>
+                  {previous && (
+                    <td className="trend__num tabular">
+                      {point.previous === undefined ? '—' : formatCurrency(point.previous)}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
@@ -232,17 +260,19 @@ export function SpendingTrend({ current, previous }: SpendingTrendProps) {
                   isAnimationActive={false}
                   content={renderTrendTooltip}
                 />
-                <Line
-                  type="monotone"
-                  dataKey="previous"
-                  stroke={PREVIOUS_COLOR}
-                  strokeWidth={2}
-                  strokeDasharray="6 5"
-                  dot={false}
-                  activeDot={{ r: 4 }}
-                  isAnimationActive={!reducedMotion}
-                  animationDuration={ANIMATION_MS}
-                />
+                {previous && (
+                  <Line
+                    type="monotone"
+                    dataKey="previous"
+                    stroke={PREVIOUS_COLOR}
+                    strokeWidth={2}
+                    strokeDasharray="6 5"
+                    dot={false}
+                    activeDot={{ r: 4 }}
+                    isAnimationActive={!reducedMotion}
+                    animationDuration={ANIMATION_MS}
+                  />
+                )}
                 <Line
                   type="monotone"
                   dataKey="current"

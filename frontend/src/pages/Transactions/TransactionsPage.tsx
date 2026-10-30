@@ -6,7 +6,7 @@ import { SearchField } from '../../components/Field/SearchField';
 import { SelectField, type SelectOption } from '../../components/Field/SelectField';
 import { TransactionsTable } from '../../components/TransactionsTable/TransactionsTable';
 import { categories, type CategoryId } from '../../data/categories';
-import { reportingPeriod } from '../../data/mockData';
+import type { ReportingPeriod } from '../../utils/reportingPeriod';
 import type { Transaction } from '../../data/transactions';
 import type { TransactionDetails } from '../../hooks/useTransactionEdits';
 import { formatShortDate } from '../../utils/formatDate';
@@ -44,6 +44,8 @@ const dateOptions: SelectOption[] = [
 
 interface TransactionsPageProps {
   transactions: Transaction[];
+  /** The days the Overview covers. Used to tell people how a date change affects it. */
+  period: ReportingPeriod | null;
   /** Categories the person chose to remember, keyed by merchant. */
   rules: Record<string, CategoryId>;
   onSaveTransaction: (
@@ -55,6 +57,7 @@ interface TransactionsPageProps {
 
 export function TransactionsPage({
   transactions,
+  period,
   rules,
   onSaveTransaction,
 }: TransactionsPageProps) {
@@ -197,15 +200,17 @@ export function TransactionsPage({
         )}
       </Card>
 
-      <EditTransactionDialog
-        open={dialogOpen}
-        session={dialogSession}
-        transaction={editing}
-        rules={rules}
-        period={reportingPeriod}
-        onClose={closeEditor}
-        onSave={saveEditor}
-      />
+      {period && (
+        <EditTransactionDialog
+          open={dialogOpen}
+          session={dialogSession}
+          transaction={editing}
+          rules={rules}
+          period={period}
+          onClose={closeEditor}
+          onSave={saveEditor}
+        />
+      )}
     </div>
   );
 }

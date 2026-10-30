@@ -23,8 +23,8 @@ type Row = [
 ];
 
 /**
- * Sample transactions, newest first. Spending adds up to the daily and category figures on
- * the Overview, and the salary credit matches Total Income.
+ * Sample transactions, newest first. October adds up to the daily and category figures on the
+ * Overview, and September is the same days last month, used for comparisons.
  */
 const rows: Row[] = [
   ['t1', '2026-10-25', 'Zomato', 'dining', 620],
@@ -72,6 +72,45 @@ const rows: Row[] = [
   ['t43', '2026-10-02', 'Decathlon', 'shopping', 1250],
   ['t44', '2026-10-01', 'Rent payment', 'housing', 16000],
   ['t45', '2026-10-01', 'Salary credit', 'income', 125000],
+  ['s1', '2026-09-25', 'DMart', 'groceries', 1160],
+  ['s2', '2026-09-25', 'Uber', 'transport', 740],
+  ['s3', '2026-09-24', 'Rapido', 'transport', 820],
+  ['s4', '2026-09-23', 'Zomato', 'dining', 220],
+  ['s5', '2026-09-23', 'ATM withdrawal', 'other', 1910],
+  ['s6', '2026-09-22', 'DMart', 'groceries', 880],
+  ['s7', '2026-09-22', 'Metro card recharge', 'transport', 100],
+  ['s8', '2026-09-21', 'Starbucks', 'dining', 1240],
+  ['s9', '2026-09-20', 'Croma', 'shopping', 650],
+  ['s10', '2026-09-19', 'Reliance Fresh', 'groceries', 2400],
+  ['s11', '2026-09-19', 'Uber', 'transport', 470],
+  ['s12', '2026-09-18', 'Broadband', 'bills', 1130],
+  ['s13', '2026-09-17', 'Flipkart', 'shopping', 530],
+  ['s14', '2026-09-17', 'Broadband', 'bills', 1080],
+  ['s15', '2026-09-16', 'Practo', 'health', 820],
+  ['s16', '2026-09-15', 'Swiggy', 'dining', 200],
+  ['s17', '2026-09-15', 'UPI transfer', 'other', 1780],
+  ['s18', '2026-09-14', 'Amazon', 'shopping', 1230],
+  ['s19', '2026-09-13', 'ATM withdrawal', 'other', 590],
+  ['s20', '2026-09-12', 'DMart', 'groceries', 2270],
+  ['s21', '2026-09-12', 'Water bill', 'bills', 890],
+  ['s22', '2026-09-11', 'Reliance Fresh', 'groceries', 1150],
+  ['s23', '2026-09-10', 'Pizza Hut', 'dining', 780],
+  ['s24', '2026-09-10', 'Uber', 'transport', 100],
+  ['s25', '2026-09-09', 'Zepto', 'groceries', 1540],
+  ['s26', '2026-09-09', 'Ola', 'transport', 900],
+  ['s27', '2026-09-09', 'Practo', 'health', 900],
+  ['s28', '2026-09-08', 'Uber', 'transport', 100],
+  ['s29', '2026-09-08', 'Cash withdrawal', 'other', 1270],
+  ['s30', '2026-09-07', 'ATM withdrawal', 'other', 360],
+  ['s31', '2026-09-06', 'Croma', 'shopping', 1820],
+  ['s32', '2026-09-05', 'Zomato', 'dining', 860],
+  ['s33', '2026-09-05', 'Amazon', 'shopping', 1370],
+  ['s34', '2026-09-04', 'Indian Oil', 'transport', 470],
+  ['s35', '2026-09-04', 'MedPlus', 'health', 440],
+  ['s36', '2026-09-03', 'Cash withdrawal', 'other', 1890],
+  ['s37', '2026-09-02', 'Chaayos', 'dining', 1040],
+  ['s38', '2026-09-01', 'Rent payment', 'housing', 16000],
+  ['s39', '2026-09-01', 'Salary credit', 'income', 125000],
 ];
 
 export const transactions: Transaction[] = rows.map(

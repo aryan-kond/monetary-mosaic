@@ -1,9 +1,17 @@
-const shortDate = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short' });
-const fullDate = new Intl.DateTimeFormat('en-IN', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-});
+const MONTHS_SHORT = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 const longDate = new Intl.DateTimeFormat('en-IN', {
   weekday: 'long',
   day: 'numeric',
@@ -11,6 +19,7 @@ const longDate = new Intl.DateTimeFormat('en-IN', {
   year: 'numeric',
 });
 const monthYear = new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numeric' });
+const monthLong = new Intl.DateTimeFormat('en-IN', { month: 'long' });
 const weekdayShort = new Intl.DateTimeFormat('en-IN', { weekday: 'short' });
 const weekdayLong = new Intl.DateTimeFormat('en-IN', { weekday: 'long' });
 
@@ -21,12 +30,13 @@ function parseIsoDate(isoDate: string): Date {
 
 /** "25 Oct". Built as a local date so it never shifts a day. */
 export function formatShortDate(isoDate: string): string {
-  return shortDate.format(parseIsoDate(isoDate));
+  const date = parseIsoDate(isoDate);
+  return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]}`;
 }
 
 /** "25 Oct 2026". */
 export function formatFullDate(isoDate: string): string {
-  return fullDate.format(parseIsoDate(isoDate));
+  return `${formatShortDate(isoDate)} ${parseIsoDate(isoDate).getFullYear()}`;
 }
 
 /** "Sunday 25 October 2026", for screen readers. */
@@ -37,6 +47,16 @@ export function formatLongDate(isoDate: string): string {
 /** "October 2026". */
 export function formatMonthYear(isoDate: string): string {
   return monthYear.format(parseIsoDate(isoDate));
+}
+
+/** "Oct". */
+export function formatMonthShort(isoDate: string): string {
+  return MONTHS_SHORT[parseIsoDate(isoDate).getMonth()];
+}
+
+/** "October". */
+export function formatMonthName(isoDate: string): string {
+  return monthLong.format(parseIsoDate(isoDate));
 }
 
 /** Day names starting on Monday, for example { short: 'Mon', long: 'Monday' }. */

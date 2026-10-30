@@ -1,4 +1,3 @@
-import { summaryData } from '../../data/mockData';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { MetricCard, type MetricBadge, type MetricProgress } from '../MetricCard/MetricCard';
 import './SummaryCards.css';
@@ -46,12 +45,22 @@ function getBudgetStatus(percentUsed: number): {
 interface SummaryCardsProps {
   totalSpent: number;
   totalIncome: number;
+  /** The same days last month. Zero means there is nothing to compare with. */
+  previousTotalSpent: number;
+  previousTotalIncome: number;
+  /** For example "1–25 Sep". */
+  previousPeriodShort: string;
+  monthlyBudget: number;
 }
 
-export function SummaryCards({ totalSpent, totalIncome }: SummaryCardsProps) {
-  const { previousTotalSpent, previousTotalIncome, monthlyBudget, previousPeriodShort } =
-    summaryData;
-
+export function SummaryCards({
+  totalSpent,
+  totalIncome,
+  previousTotalSpent,
+  previousTotalIncome,
+  previousPeriodShort,
+  monthlyBudget,
+}: SummaryCardsProps) {
   const netCashFlow = totalIncome - totalSpent;
   const previousNetCashFlow = previousTotalIncome - previousTotalSpent;
   const budgetRemaining = monthlyBudget - totalSpent;

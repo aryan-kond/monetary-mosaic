@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { categories, type CategoryId } from '../../data/categories';
 import type { Transaction } from '../../data/transactions';
 import { ruleKey, type TransactionDetails } from '../../hooks/useTransactionEdits';
-import { daysBetween } from '../../utils/formatDate';
+
 import { Button } from '../Button/Button';
 import { Chip } from '../Chip/Chip';
 import { DatePickerField } from '../DatePickerField/DatePickerField';
@@ -19,6 +19,7 @@ const categoryOptions: SelectOption[] = (Object.keys(categories) as CategoryId[]
 
 interface Period {
   startDate: string;
+  endDate: string;
   days: number;
   label: string;
 }
@@ -75,8 +76,12 @@ function EditTransactionForm({ transaction, rules, period, onCancel, onSave }: F
   const merchantName = merchant.trim() || transaction.merchant;
   const existingRule = rules[ruleKey(merchantName)];
 
-  const dayOffset = daysBetween(period.startDate, date);
-  const outsidePeriod = dayOffset < 0 || dayOffset >= period.days;
+  const periodNote =
+    date < period.startDate
+      ? `This date is before ${period.label}, so it will not count in the Overview figures.`
+      : date > period.endDate
+        ? `This date is after ${period.label}. Saving it changes the period the Overview covers.`
+        : undefined;
 
   const clearError = (field: keyof Errors) =>
     setErrors((current) => ({ ...current, [field]: undefined }));
@@ -133,11 +138,7 @@ function EditTransactionForm({ transaction, rules, period, onCancel, onSave }: F
             days: period.days,
             label: 'Counts in Overview',
           }}
-          hint={
-            outsidePeriod
-              ? `This date is outside ${period.label}, so it will not count in the Overview figures.`
-              : undefined
-          }
+          hint={periodNote}
         />
         <TextField
           label="Amount"

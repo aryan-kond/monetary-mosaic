@@ -10,9 +10,12 @@ interface DoneStepProps {
   skippedDuplicates: number;
   /** Rows left out because they could not be read. */
   excluded: number;
-  /** Imported transactions dated outside the Overview's reporting period. */
+  /** Imported transactions dated before the period the Overview now covers. */
   outsidePeriod: number;
+  /** The days the Overview covers after this import. */
   periodLabel: string;
+  /** True when this import moved the Overview to a different period. */
+  periodChanged: boolean;
   onViewTransactions: () => void;
   onImportAnother: () => void;
 }
@@ -27,10 +30,14 @@ export function DoneStep({
   excluded,
   outsidePeriod,
   periodLabel,
+  periodChanged,
   onViewTransactions,
   onImportAnother,
 }: DoneStepProps) {
   const notes: string[] = [];
+  if (periodChanged) {
+    notes.push(`Your Overview now covers ${periodLabel}.`);
+  }
   if (needsReview > 0) {
     notes.push(
       `${plural(needsReview, 'imported transaction')} ${needsReview === 1 ? 'is' : 'are'} marked Needs review. Check ${needsReview === 1 ? 'it' : 'them'} in Transactions.`,
@@ -43,7 +50,7 @@ export function DoneStep({
   }
   if (outsidePeriod > 0) {
     notes.push(
-      `${plural(outsidePeriod, 'imported transaction')} ${outsidePeriod === 1 ? 'falls' : 'fall'} outside ${periodLabel}, so ${outsidePeriod === 1 ? 'it appears' : 'they appear'} in Transactions but ${outsidePeriod === 1 ? 'is' : 'are'} not counted in the Overview yet.`,
+      `${plural(outsidePeriod, 'imported transaction')} ${outsidePeriod === 1 ? 'is' : 'are'} dated before ${periodLabel}. ${outsidePeriod === 1 ? 'It appears' : 'They appear'} in Transactions, but the Overview only looks at that period and the same days last month, so ${outsidePeriod === 1 ? 'it' : 'they'} may not show up there.`,
     );
   }
 

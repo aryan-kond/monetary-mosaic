@@ -5,12 +5,12 @@ import { Button } from './components/Button/Button';
 import { PageHeader } from './components/PageHeader/PageHeader';
 import { primaryNav, utilityNav, type NavId } from './components/Sidebar/navItems';
 import { UndoToast } from './components/UndoToast/UndoToast';
-import { reportingPeriod } from './data/mockData';
 import { transactions as sampleTransactions } from './data/transactions';
 import { describeChange, useTransactionEdits } from './hooks/useTransactionEdits';
 import { ImportPage } from './pages/Import/ImportPage';
 import { OverviewPage } from './pages/Overview/OverviewPage';
 import { TransactionsPage } from './pages/Transactions/TransactionsPage';
+import { getReportingPeriod } from './utils/reportingPeriod';
 import './App.css';
 
 const allNavItems = [...primaryNav, ...utilityNav];
@@ -21,6 +21,9 @@ export default function App() {
   const [importing, setImporting] = useState(false);
   const { transactions, rules, lastChange, saveTransaction, addTransactions, undo, dismiss } =
     useTransactionEdits(sampleTransactions);
+
+  // The Overview covers the month of the latest transaction, so edits and imports can move it.
+  const period = getReportingPeriod(transactions);
 
   const activeItem = allNavItems.find((item) => item.id === activeId) ?? primaryNav[0];
   const isOverview = activeId === 'overview';
@@ -60,6 +63,7 @@ export default function App() {
         return (
           <OverviewPage
             transactions={transactions}
+            period={period}
             onViewAllTransactions={() => navigate('transactions')}
           />
         );
@@ -67,6 +71,7 @@ export default function App() {
         return (
           <TransactionsPage
             transactions={transactions}
+            period={period}
             rules={rules}
             onSaveTransaction={saveTransaction}
           />
@@ -99,7 +104,7 @@ export default function App() {
       <AppShell activeId={activeId} onNavigate={navigate}>
         <PageHeader
           title={showImport ? 'Import statement' : activeItem.label}
-          period={showsSampleData ? reportingPeriod.label : undefined}
+          period={showsSampleData && period ? period.label : undefined}
           sampleData={showsSampleData}
           action={renderAction()}
         />

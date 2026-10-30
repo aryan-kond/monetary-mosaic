@@ -6,7 +6,7 @@ import { ReviewStep } from '../../components/ReviewStep/ReviewStep';
 import { StepIndicator } from '../../components/StepIndicator/StepIndicator';
 import { UploadStep } from '../../components/UploadStep/UploadStep';
 import type { CategoryId } from '../../data/categories';
-import { reportingPeriod } from '../../data/mockData';
+import { getReportingPeriod } from '../../utils/reportingPeriod';
 import type { Transaction } from '../../data/transactions';
 import {
   buildImportRows,
@@ -16,7 +16,7 @@ import {
 } from '../../utils/buildImportRows';
 import type { ParsedCsv } from '../../utils/csv';
 import { detectColumns, type Detection } from '../../utils/detectColumns';
-import { daysBetween } from '../../utils/formatDate';
+
 import type { ColumnMapping } from '../../utils/importMapping';
 import './ImportPage.css';
 
@@ -50,6 +50,8 @@ interface ImportResult {
   skippedDuplicates: number;
   excluded: number;
   outsidePeriod: number;
+  periodLabel: string;
+  periodChanged: boolean;
 }
 
 interface ImportPageProps {
@@ -132,16 +134,18 @@ export function ImportPage({ transactions, rules, onImport, onViewTransactions }
       })),
     );
 
+    const before = getReportingPeriod(transactions);
+    const after = getReportingPeriod([...transactions, ...plan.rows]);
+
     setResult({
       fileName: parsed.fileName,
       imported: plan.rows.length,
       needsReview: plan.rows.filter((row) => row.needsReview).length,
       skippedDuplicates: plan.skipped,
       excluded: built.excluded.length,
-      outsidePeriod: plan.rows.filter((row) => {
-        const offset = daysBetween(reportingPeriod.startDate, row.date);
-        return offset < 0 || offset >= reportingPeriod.days;
-      }).length,
+      outsidePeriod: after ? plan.rows.filter((row) => row.date < after.startDate).length : 0,
+      periodLabel: after?.label ?? '',
+      periodChanged: before?.startDate !== after?.startDate || before?.endDate !== after?.endDate,
     });
     goTo(3);
   };
@@ -203,7 +207,7 @@ export function ImportPage({ transactions, rules, onImport, onViewTransactions }
         {step === 3 && result && (
           <DoneStep
             {...result}
-            periodLabel={reportingPeriod.label}
+
             onViewTransactions={onViewTransactions}
             onImportAnother={startAnother}
           />
