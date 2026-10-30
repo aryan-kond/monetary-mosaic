@@ -25,6 +25,8 @@
   --color-warning-tint: #fff3de;
   --color-negative: #c44747;
   --color-negative-tint: #fcecec;
+  --color-negative-hover: #a93a3a;
+  --color-negative-pressed: #8f3030;
 
   /* Spacing scale */
   --space-1: 4px;

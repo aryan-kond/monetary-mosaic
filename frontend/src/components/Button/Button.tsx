@@ -2,8 +2,8 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import './Button.css';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** One primary button per view. Use secondary for supporting actions. */
-  variant?: 'primary' | 'secondary';
+  /** One primary button per view. Destructive confirms something hard to reverse, and is used sparingly. */
+  variant?: 'primary' | 'secondary' | 'destructive';
   /** "compact" is 40 px high, for use inside table rows. */
   size?: 'default' | 'compact';
   /** Optional leading icon. It is decorative, so the label must carry the meaning. */

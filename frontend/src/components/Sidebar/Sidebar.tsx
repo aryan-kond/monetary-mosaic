@@ -3,7 +3,11 @@ import { Logo } from '../Logo/Logo';
 import { primaryNav, utilityNav, type NavId, type NavItem } from './navItems';
 import './Sidebar.css';
 
-const SAMPLE_NOTE = 'Figures shown are examples, not from a bank account.';
+/** What to say about where the figures come from. */
+export interface DataNote {
+  title: string;
+  text: string;
+}
 
 interface SidebarProps {
   activeId: NavId;
@@ -14,6 +18,7 @@ interface SidebarProps {
   collapsed?: boolean;
   /** Provided on desktop, where the sidebar can be collapsed. */
   onToggleCollapsed?: () => void;
+  dataNote: DataNote;
 }
 
 interface NavLinkProps {
@@ -55,6 +60,7 @@ export function Sidebar({
   onClose,
   collapsed = false,
   onToggleCollapsed,
+  dataNote,
 }: SidebarProps) {
   const toggleLabel = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
   const ToggleIcon = collapsed ? PanelLeftOpen : PanelLeftClose;
@@ -98,8 +104,8 @@ export function Sidebar({
           <div className="sidebar__sample-slot" inert={collapsed}>
             <div className="sidebar__sample-clip">
               <div className="sidebar__sample">
-                <strong>Sample data</strong>
-                <span>{SAMPLE_NOTE}</span>
+                <strong>{dataNote.title}</strong>
+                <span>{dataNote.text}</span>
               </div>
             </div>
           </div>
@@ -107,9 +113,11 @@ export function Sidebar({
             <div className="sidebar__sample-rail-clip">
               <div className="sidebar__sample-rail rail-tip" role="note" tabIndex={0}>
                 <Info size={18} strokeWidth={1.75} aria-hidden="true" />
-                <span className="visually-hidden">Sample data. {SAMPLE_NOTE}</span>
+                <span className="visually-hidden">
+                  {dataNote.title}. {dataNote.text}
+                </span>
                 <span className="rail-tip__text rail-tip__text--wide" aria-hidden="true">
-                  Sample data. {SAMPLE_NOTE}
+                  {dataNote.title}. {dataNote.text}
                 </span>
               </div>
             </div>

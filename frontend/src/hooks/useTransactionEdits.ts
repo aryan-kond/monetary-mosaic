@@ -1,17 +1,25 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { categories, type CategoryId } from '../data/categories';
 import type { Transaction } from '../data/transactions';
 import { formatCurrency } from '../utils/formatCurrency';
 import { formatShortDate } from '../utils/formatDate';
 import { ruleKey } from '../utils/merchantRules';
 
+export { ruleKey };
+
 /** The details a person can edit. */
 export interface TransactionDetails {
   merchant: string;
   /** ISO date, YYYY-MM-DD. */
   date: string;
-  /** Whole rupees, always positive. */
+  /** In rupees, always positive. */
   amount: number;
+  categoryId: CategoryId;
+}
+
+/** A category the person asked us to remember for a merchant. */
+export interface SavedRule {
+  merchant: string;
   categoryId: CategoryId;
 }
 
@@ -22,10 +30,33 @@ export interface TransactionEdit {
   before: Transaction;
   after: TransactionDetails;
   /** Present when the person chose to remember this category for the merchant. */
-  rule?: { key: string; previous?: CategoryId };
+  rule?: { key: string; previous?: SavedRule };
 }
 
-export { ruleKey };
+/** One line of import history. */
+export interface ImportRecord {
+  id: string;
+  fileName: string;
+  /** ISO timestamp. */
+  importedAt: string;
+  imported: number;
+  skippedDuplicates: number;
+  /** Rows left out because they could not be read. */
+  excluded: number;
+  isSample: boolean;
+  /** Set when the import was undone. */
+  undoneAt?: string;
+}
+
+export type NewTransaction = Omit<Transaction, 'id' | 'importId' | 'isSample'>;
+
+export interface ImportInput {
+  fileName: string;
+  isSample: boolean;
+  rows: NewTransaction[];
+  skippedDuplicates: number;
+  excluded: number;
+}
 
 const listFormat = new Intl.ListFormat('en-IN', { style: 'long', type: 'conjunction' });
 
@@ -66,24 +97,31 @@ export function describeChange({ before, after, rule }: TransactionEdit): string
 }
 
 /**
- * Holds the transactions and the remembered merchant rules in memory. A saved edit marks the
- * transaction as reviewed, and the last change can be undone.
+ * Holds the transactions, remembered merchant rules, and import history in memory. A saved edit
+ * marks the transaction as reviewed, and the last edit can be undone. Imports can be undone too.
  */
 export function useTransactionEdits(initial: Transaction[]) {
   const [transactions, setTransactions] = useState(initial);
-  const [rules, setRules] = useState<Record<string, CategoryId>>({});
+  const [ruleList, setRuleList] = useState<Record<string, SavedRule>>({});
+  const [history, setHistory] = useState<ImportRecord[]>([]);
   const [lastChange, setLastChange] = useState<TransactionEdit | null>(null);
   const editCount = useRef(0);
-  const importedCount = useRef(0);
+  const importCount = useRef(0);
 
-  /** Adds imported transactions. Each one gets its own id. */
-  const addTransactions = (incoming: Omit<Transaction, 'id'>[]) => {
-    const added = incoming.map((transaction) => {
-      importedCount.current += 1;
-      return { ...transaction, id: `imp-${importedCount.current}` };
-    });
-    setTransactions((list) => [...list, ...added]);
-  };
+  /** The simple merchant-to-category map that the edit and import screens use. */
+  const rules = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(ruleList).map(([key, rule]) => [key, rule.categoryId]),
+      ) as Record<string, CategoryId>,
+    [ruleList],
+  );
+
+  /** The same rules as a list, with their merchant names, for the Settings screen. */
+  const savedRules = useMemo(
+    () => Object.entries(ruleList).map(([key, rule]) => ({ key, ...rule })),
+    [ruleList],
+  );
 
   const saveTransaction = (
     transactionId: string,
@@ -102,14 +140,17 @@ export function useTransactionEdits(initial: Transaction[]) {
       ),
     );
     if (rememberRule) {
-      setRules((current) => ({ ...current, [key]: details.categoryId }));
+      setRuleList((current) => ({
+        ...current,
+        [key]: { merchant: details.merchant, categoryId: details.categoryId },
+      }));
     }
     editCount.current += 1;
     setLastChange({
       id: editCount.current,
       before: target,
       after: details,
-      rule: rememberRule ? { key, previous: rules[key] } : undefined,
+      rule: rememberRule ? { key, previous: ruleList[key] } : undefined,
     });
   };
 
@@ -121,7 +162,7 @@ export function useTransactionEdits(initial: Transaction[]) {
       list.map((transaction) => (transaction.id === before.id ? before : transaction)),
     );
     if (rule) {
-      setRules((current) => {
+      setRuleList((current) => {
         const next = { ...current };
         if (rule.previous) {
           next[rule.key] = rule.previous;
@@ -136,5 +177,71 @@ export function useTransactionEdits(initial: Transaction[]) {
 
   const dismiss = () => setLastChange(null);
 
-  return { transactions, rules, lastChange, saveTransaction, addTransactions, undo, dismiss };
+  /** Adds the imported transactions and records the import in the history. */
+  const importTransactions = (input: ImportInput) => {
+    importCount.current += 1;
+    const importId = `import-${importCount.current}`;
+
+    const added: Transaction[] = input.rows.map((row, index) => ({
+      ...row,
+      id: `${importId}-${index + 1}`,
+      importId,
+      isSample: input.isSample,
+    }));
+
+    setTransactions((list) => [...list, ...added]);
+    setHistory((list) => [
+      ...list,
+      {
+        id: importId,
+        fileName: input.fileName,
+        importedAt: new Date().toISOString(),
+        imported: input.rows.length,
+        skippedDuplicates: input.skippedDuplicates,
+        excluded: input.excluded,
+        isSample: input.isSample,
+      },
+    ]);
+  };
+
+  /** Removes everything an import added, and marks it as undone in the history. */
+  const undoImport = (importId: string) => {
+    setTransactions((list) => list.filter((transaction) => transaction.importId !== importId));
+    setHistory((list) =>
+      list.map((record) =>
+        record.id === importId ? { ...record, undoneAt: new Date().toISOString() } : record,
+      ),
+    );
+    setLastChange(null);
+  };
+
+  /** Removes the example transactions, and the history of importing the sample statement. */
+  const removeSampleData = () => {
+    setTransactions((list) => list.filter((transaction) => !transaction.isSample));
+    setHistory((list) => list.filter((record) => !record.isSample));
+    setLastChange(null);
+  };
+
+  const removeRule = (key: string) => {
+    setRuleList((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  };
+
+  return {
+    transactions,
+    rules,
+    savedRules,
+    history,
+    lastChange,
+    saveTransaction,
+    undo,
+    dismiss,
+    importTransactions,
+    undoImport,
+    removeSampleData,
+    removeRule,
+  };
 }

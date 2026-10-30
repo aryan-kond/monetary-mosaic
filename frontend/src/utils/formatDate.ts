@@ -22,6 +22,11 @@ const monthYear = new Intl.DateTimeFormat('en-IN', { month: 'long', year: 'numer
 const monthLong = new Intl.DateTimeFormat('en-IN', { month: 'long' });
 const weekdayShort = new Intl.DateTimeFormat('en-IN', { weekday: 'short' });
 const weekdayLong = new Intl.DateTimeFormat('en-IN', { weekday: 'long' });
+const timeFormat = new Intl.DateTimeFormat('en-IN', {
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+});
 
 function parseIsoDate(isoDate: string): Date {
   const [year, month, day] = isoDate.split('-').map(Number);
@@ -80,4 +85,9 @@ export function daysBetween(startIso: string, endIso: string): number {
     return Date.UTC(year, month - 1, day);
   };
   return Math.round((toUtc(endIso) - toUtc(startIso)) / 86400000);
+}
+/** "29 Oct 2026, 3:42 pm", in the person's own time zone. */
+export function formatDateTime(timestamp: string): string {
+  const date = new Date(timestamp);
+  return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}, ${timeFormat.format(date)}`;
 }

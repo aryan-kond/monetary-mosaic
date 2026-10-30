@@ -44,15 +44,15 @@ const dateOptions: SelectOption[] = [
 
 interface TransactionsPageProps {
   transactions: Transaction[];
-  /** The days the Overview covers. Used to tell people how a date change affects it. */
   period: ReportingPeriod | null;
-  /** Categories the person chose to remember, keyed by merchant. */
   rules: Record<string, CategoryId>;
   onSaveTransaction: (
     transactionId: string,
     details: TransactionDetails,
     rememberRule: boolean,
   ) => void;
+  /** Starts the import flow. Used when there are no transactions at all. */
+  onImportStatement: () => void;
 }
 
 export function TransactionsPage({
@@ -60,6 +60,7 @@ export function TransactionsPage({
   period,
   rules,
   onSaveTransaction,
+  onImportStatement,
 }: TransactionsPageProps) {
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [sortValue, setSortValue] = useState(defaultSortValue);
@@ -70,6 +71,24 @@ export function TransactionsPage({
   const [editing, setEditing] = useState<Transaction | undefined>();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogSession, setDialogSession] = useState(0);
+
+  if (transactions.length === 0) {
+    return (
+      <div className="txn-page">
+        <Card title="All transactions" description="No transactions yet.">
+          <div className="txn-empty">
+            <p className="txn-empty__title">There is nothing here yet</p>
+            <p className="txn-empty__text">
+              Import a CSV statement from your bank to see your transactions.
+            </p>
+            <Button onClick={onImportStatement}>Import statement</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  const hasSampleData = transactions.some((transaction) => transaction.isSample);
 
   // Date ranges count back from the most recent transaction.
   const latestDate = transactions.reduce(
@@ -125,7 +144,7 @@ export function TransactionsPage({
     <div className="txn-page">
       <Card
         title="All transactions"
-        description="Sample data. Categories are assigned automatically, and every detail can be corrected."
+        description={`${hasSampleData ? 'Sample data. ' : ''}Categories are assigned automatically, and every detail can be corrected.`}
       >
         <div className="txn-toolbar">
           <SearchField
@@ -178,11 +197,7 @@ export function TransactionsPage({
           </div>
         ) : (
           <>
-            <TransactionsTable
-              transactions={visible}
-              caption="Transactions (sample data)"
-              onEdit={openEditor}
-            />
+            <TransactionsTable transactions={visible} caption="Transactions" onEdit={openEditor} />
             {matches.length > visible.length && (
               <div className="txn-more">
                 <p>

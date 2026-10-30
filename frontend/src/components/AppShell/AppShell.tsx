@@ -4,7 +4,7 @@ import { Menu } from 'lucide-react';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useSmoothScroll } from '../../hooks/useSmoothScroll';
 import { Logo } from '../Logo/Logo';
-import { Sidebar } from '../Sidebar/Sidebar';
+import { Sidebar, type DataNote } from '../Sidebar/Sidebar';
 import type { NavId } from '../Sidebar/navItems';
 import './AppShell.css';
 
@@ -35,9 +35,10 @@ interface AppShellProps {
   activeId: NavId;
   onNavigate: (id: NavId) => void;
   children: ReactNode;
+  dataNote: DataNote;
 }
 
-export function AppShell({ activeId, onNavigate, children }: AppShellProps) {
+export function AppShell({ activeId, onNavigate, dataNote, children }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsedPreference, setCollapsedPreference] = useState(readCollapsedPreference);
   const isDesktop = useMediaQuery(DESKTOP_QUERY);
@@ -160,6 +161,7 @@ export function AppShell({ activeId, onNavigate, children }: AppShellProps) {
         <Sidebar
           activeId={activeId}
           onNavigate={handleNavigate}
+          dataNote={dataNote}
           onClose={() => setDrawerOpen(false)}
           collapsed={sidebarCollapsed}
           onToggleCollapsed={isDesktop ? handleToggleCollapsed : undefined}

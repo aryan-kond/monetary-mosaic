@@ -9,6 +9,7 @@ import { transactions as sampleTransactions } from './data/transactions';
 import { describeChange, useTransactionEdits } from './hooks/useTransactionEdits';
 import { ImportPage } from './pages/Import/ImportPage';
 import { OverviewPage } from './pages/Overview/OverviewPage';
+import { SettingsPage } from './pages/Settings/SettingsPage';
 import { TransactionsPage } from './pages/Transactions/TransactionsPage';
 import { getReportingPeriod } from './utils/reportingPeriod';
 import './App.css';
@@ -19,17 +20,30 @@ export default function App() {
   const [activeId, setActiveId] = useState<NavId>('overview');
   /** The import flow lives inside Transactions, so this only matters on that screen. */
   const [importing, setImporting] = useState(false);
-  const { transactions, rules, lastChange, saveTransaction, addTransactions, undo, dismiss } =
-    useTransactionEdits(sampleTransactions);
+  const {
+    transactions,
+    rules,
+    savedRules,
+    history,
+    lastChange,
+    saveTransaction,
+    undo,
+    dismiss,
+    importTransactions,
+    undoImport,
+    removeSampleData,
+    removeRule,
+  } = useTransactionEdits(sampleTransactions);
 
   // The Overview covers the month of the latest transaction, so edits and imports can move it.
   const period = getReportingPeriod(transactions);
+  const hasSampleData = transactions.some((transaction) => transaction.isSample);
 
   const activeItem = allNavItems.find((item) => item.id === activeId) ?? primaryNav[0];
   const isOverview = activeId === 'overview';
   const isTransactions = activeId === 'transactions';
   const showImport = isTransactions && importing;
-  const showsSampleData = (isOverview || isTransactions) && !showImport;
+  const showsSampleData = (isOverview || isTransactions) && !showImport && hasSampleData;
 
   // Any move to another screen starts at the top of the page.
   useEffect(() => {
@@ -52,7 +66,7 @@ export default function App() {
         <ImportPage
           transactions={transactions}
           rules={rules}
-          onImport={addTransactions}
+          onImport={importTransactions}
           onViewTransactions={() => setImporting(false)}
         />
       );
@@ -74,6 +88,18 @@ export default function App() {
             period={period}
             rules={rules}
             onSaveTransaction={saveTransaction}
+            onImportStatement={startImport}
+          />
+        );
+      case 'settings':
+        return (
+          <SettingsPage
+            transactions={transactions}
+            history={history}
+            rules={savedRules}
+            onUndoImport={undoImport}
+            onRemoveSample={removeSampleData}
+            onRemoveRule={removeRule}
           />
         );
       default:
@@ -101,10 +127,23 @@ export default function App() {
 
   return (
     <>
-      <AppShell activeId={activeId} onNavigate={navigate}>
+      <AppShell
+        activeId={activeId}
+        onNavigate={navigate}
+        dataNote={
+          hasSampleData
+            ? { title: 'Sample data', text: 'Figures shown are examples, not from a bank account.' }
+            : {
+                title: 'Your imported data',
+                text: 'From the files you uploaded. Nothing is connected to a bank.',
+              }
+        }
+      >
         <PageHeader
           title={showImport ? 'Import statement' : activeItem.label}
-          period={showsSampleData && period ? period.label : undefined}
+          period={
+            (isOverview || isTransactions) && !showImport && period ? period.label : undefined
+          }
           sampleData={showsSampleData}
           action={renderAction()}
         />

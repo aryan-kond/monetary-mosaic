@@ -25,17 +25,14 @@ export function RecentTransactions({ transactions, onViewAll }: RecentTransactio
   return (
     <Card
       title="Recent transactions"
-      description={`Latest ${transactions.length} transactions, sample data`}
+      description={`Latest ${transactions.length} transactions`}
       action={
         <Button variant="secondary" onClick={onViewAll}>
           View all transactions
         </Button>
       }
     >
-      <TransactionsTable
-        transactions={transactions}
-        caption="Most recent transactions (sample data)"
-      />
+      <TransactionsTable transactions={transactions} caption="Most recent transactions" />
       <p className="recent__note">
         Categories are assigned automatically. Correct them in Transactions.
       </p>

@@ -11,6 +11,10 @@ export interface Transaction {
   direction: 'out' | 'in';
   /** True when the category was assigned automatically with low confidence. */
   needsReview?: boolean;
+  /** Set on transactions that came from an import, so the import can be undone. */
+  importId?: string;
+  /** True for the example transactions and for imports of the sample statement. */
+  isSample?: boolean;
 }
 
 type Row = [
@@ -122,5 +126,6 @@ export const transactions: Transaction[] = rows.map(
     amount,
     direction: categoryId === 'income' ? 'in' : 'out',
     needsReview: flag === 'review',
+    isSample: true,
   }),
 );

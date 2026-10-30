@@ -8,6 +8,7 @@ import { UploadStep } from '../../components/UploadStep/UploadStep';
 import type { CategoryId } from '../../data/categories';
 import { getReportingPeriod } from '../../utils/reportingPeriod';
 import type { Transaction } from '../../data/transactions';
+import type { ImportInput } from '../../hooks/useTransactionEdits';
 import {
   buildImportRows,
   planImport,
@@ -59,7 +60,7 @@ interface ImportPageProps {
   transactions: Transaction[];
   /** Categories the person chose to remember, keyed by merchant. */
   rules: Record<string, CategoryId>;
-  onImport: (transactions: Omit<Transaction, 'id'>[]) => void;
+  onImport: (input: ImportInput) => void;
   onViewTransactions: () => void;
 }
 
@@ -123,8 +124,12 @@ export function ImportPage({ transactions, rules, onImport, onViewTransactions }
   const handleImport = () => {
     if (!parsed || !built || !plan || plan.undecided > 0 || plan.rows.length === 0) return;
 
-    onImport(
-      plan.rows.map((row) => ({
+    onImport({
+      fileName: parsed.fileName,
+      isSample: parsed.isSample,
+      skippedDuplicates: plan.skipped,
+      excluded: built.excluded.length,
+      rows: plan.rows.map((row) => ({
         merchant: row.merchant,
         date: row.date,
         categoryId: row.categoryId,
@@ -132,7 +137,7 @@ export function ImportPage({ transactions, rules, onImport, onViewTransactions }
         direction: row.direction,
         needsReview: row.needsReview,
       })),
-    );
+    });
 
     const before = getReportingPeriod(transactions);
     const after = getReportingPeriod([...transactions, ...plan.rows]);

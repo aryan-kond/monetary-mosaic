@@ -72,3 +72,15 @@
   content: '✓';
   font-weight: 700;
 }
+.button--destructive {
+  background: var(--color-negative);
+  color: #ffffff;
+}
+
+.button--destructive:hover:not(:disabled) {
+  background: var(--color-negative-hover);
+}
+
+.button--destructive:active:not(:disabled) {
+  background: var(--color-negative-pressed);
+}
