@@ -1,0 +1,17 @@
+.budgets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 64rem;
+  container-type: inline-size;
+}
+
+/* A confirmation of what just changed. The words carry the meaning, the tint reinforces it. */
+.budgets__notice {
+  padding: var(--space-4);
+  border: 1px solid var(--color-positive);
+  border-radius: var(--radius-card);
+  background: var(--color-positive-tint);
+  font-size: var(--text-row);
+  color: var(--color-text-primary);
+}

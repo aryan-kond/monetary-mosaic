@@ -12,6 +12,8 @@ import { OverviewPage } from './pages/Overview/OverviewPage';
 import { SettingsPage } from './pages/Settings/SettingsPage';
 import { TransactionsPage } from './pages/Transactions/TransactionsPage';
 import { getReportingPeriod } from './utils/reportingPeriod';
+import { useBudgets } from './hooks/useBudgets';
+import { BudgetsPage } from './pages/Budgets/BudgetsPage';
 import './App.css';
 
 const allNavItems = [...primaryNav, ...utilityNav];
@@ -34,6 +36,7 @@ export default function App() {
     removeSampleData,
     removeRule,
   } = useTransactionEdits(sampleTransactions);
+  const { monthlyBudget, setMonthlyBudget, categoryLimits, setCategoryLimit } = useBudgets();
 
   // The Overview covers the month of the latest transaction, so edits and imports can move it.
   const period = getReportingPeriod(transactions);
@@ -43,7 +46,8 @@ export default function App() {
   const isOverview = activeId === 'overview';
   const isTransactions = activeId === 'transactions';
   const showImport = isTransactions && importing;
-  const showsSampleData = (isOverview || isTransactions) && !showImport && hasSampleData;
+  const showsData = isOverview || isTransactions || activeId === 'budgets';
+  const showsSampleData = showsData && !showImport && hasSampleData;
 
   // Any move to another screen starts at the top of the page.
   useEffect(() => {
@@ -78,6 +82,7 @@ export default function App() {
           <OverviewPage
             transactions={transactions}
             period={period}
+            monthlyBudget={monthlyBudget}
             onViewAllTransactions={() => navigate('transactions')}
           />
         );
@@ -91,6 +96,19 @@ export default function App() {
             onImportStatement={startImport}
           />
         );
+
+      case 'budgets':
+        return (
+          <BudgetsPage
+            transactions={transactions}
+            period={period}
+            monthlyBudget={monthlyBudget}
+            categoryLimits={categoryLimits}
+            onMonthlyBudgetChange={setMonthlyBudget}
+            onCategoryLimitChange={setCategoryLimit}
+          />
+        );
+
       case 'settings':
         return (
           <SettingsPage
@@ -141,9 +159,7 @@ export default function App() {
       >
         <PageHeader
           title={showImport ? 'Import statement' : activeItem.label}
-          period={
-            (isOverview || isTransactions) && !showImport && period ? period.label : undefined
-          }
+          period={showsData && !showImport && period ? period.label : undefined}
           sampleData={showsSampleData}
           action={renderAction()}
         />

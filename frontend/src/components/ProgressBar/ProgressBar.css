@@ -1,0 +1,32 @@
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.progress__track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-border);
+}
+
+.progress__fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  transition: width var(--duration-menu) var(--ease-standard);
+}
+
+.progress__fill--warning {
+  background: var(--color-warning);
+}
+
+.progress__fill--negative {
+  background: var(--color-negative);
+}
+
+.progress__label {
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}

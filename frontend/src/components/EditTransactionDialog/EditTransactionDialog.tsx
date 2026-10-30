@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { categories, type CategoryId } from '../../data/categories';
 import type { Transaction } from '../../data/transactions';
 import { ruleKey, type TransactionDetails } from '../../hooks/useTransactionEdits';
-
+import { amountToInput, cleanAmount } from '../../utils/amountInput';
 import { Button } from '../Button/Button';
 import { Chip } from '../Chip/Chip';
 import { DatePickerField } from '../DatePickerField/DatePickerField';
@@ -28,12 +28,6 @@ interface Errors {
   merchant?: string;
   amount?: string;
 }
-
-/** People may type commas or a ₹ sign, so strip them before reading the number. */
-const cleanAmount = (value: string) => value.replace(/[,\s₹]/g, '');
-/** Shows paise only when there are some, so 620 stays 620 and 312.4 becomes 312.40. */
-const amountToInput = (amount: number) =>
-  Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
 
 function validate(merchant: string, amount: string): Errors {
   const errors: Errors = {};

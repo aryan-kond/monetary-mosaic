@@ -1,6 +1,7 @@
 import { formatCurrency } from '../../utils/formatCurrency';
 import { MetricCard, type MetricBadge, type MetricProgress } from '../MetricCard/MetricCard';
 import './SummaryCards.css';
+import { budgetState, budgetStateInfo } from '../../utils/budgets';
 
 type Direction = 'up' | 'down';
 
@@ -28,18 +29,13 @@ function getTrend(
   };
 }
 
-/** Threshold states are explicit: under 80% on track, 80-100% nearing limit, above 100% over. */
+/** The thresholds come from one shared place, so every screen agrees. */
 function getBudgetStatus(percentUsed: number): {
   badge: MetricBadge;
   progressTone: MetricProgress['tone'];
 } {
-  if (percentUsed > 100) {
-    return { badge: { tone: 'negative', text: 'Over budget' }, progressTone: 'negative' };
-  }
-  if (percentUsed >= 80) {
-    return { badge: { tone: 'warning', text: 'Nearing limit' }, progressTone: 'warning' };
-  }
-  return { badge: { tone: 'positive', text: 'On track' }, progressTone: undefined };
+  const { label, tone, progressTone } = budgetStateInfo[budgetState(percentUsed)];
+  return { badge: { tone, text: label }, progressTone };
 }
 
 interface SummaryCardsProps {

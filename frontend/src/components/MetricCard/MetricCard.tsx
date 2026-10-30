@@ -1,4 +1,5 @@
 import { Chip } from '../Chip/Chip';
+import { ProgressBar } from '../ProgressBar/ProgressBar';
 import './MetricCard.css';
 
 export interface MetricBadge {
@@ -31,14 +32,6 @@ interface MetricCardProps {
 }
 
 export function MetricCard({ label, value, note, badge, progress }: MetricCardProps) {
-  const fillPercent = progress ? Math.min(Math.max(progress.percent, 0), 100) : 0;
-  const fillClass = [
-    'metric-progress__fill',
-    progress?.tone && `metric-progress__fill--${progress.tone}`,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
   return (
     <div className="metric-card">
       <p className="metric-card__label">{label}</p>
@@ -53,19 +46,13 @@ export function MetricCard({ label, value, note, badge, progress }: MetricCardPr
       )}
 
       {progress && (
-        <div className="metric-progress">
-          <div
-            className="metric-progress__track"
-            role="progressbar"
-            aria-label={progress.ariaLabel}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(fillPercent)}
-            aria-valuetext={progress.label}
-          >
-            <div className={fillClass} style={{ width: `${fillPercent}%` }} />
-          </div>
-          <p className="metric-progress__label">{progress.label}</p>
+        <div className="metric-card__progress">
+          <ProgressBar
+            percent={progress.percent}
+            tone={progress.tone}
+            label={progress.label}
+            ariaLabel={progress.ariaLabel}
+          />
         </div>
       )}
     </div>

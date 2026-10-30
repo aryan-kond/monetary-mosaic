@@ -5,7 +5,6 @@ import { InsightsCard } from '../../components/InsightsCard/InsightsCard';
 import { RecentTransactions } from '../../components/RecentTransactions/RecentTransactions';
 import { SpendingTrend } from '../../components/SpendingTrend/SpendingTrend';
 import { SummaryCards } from '../../components/SummaryCards/SummaryCards';
-import { monthlyBudget } from '../../data/mockData';
 import type { Transaction } from '../../data/transactions';
 import { projectMonthEnd } from '../../utils/forecast';
 import { buildInsights } from '../../utils/insights';
@@ -21,10 +20,16 @@ interface OverviewPageProps {
   transactions: Transaction[];
   /** The days the Overview covers, or null when there are no transactions. */
   period: ReportingPeriod | null;
+  monthlyBudget: number;
   onViewAllTransactions: () => void;
 }
 
-export function OverviewPage({ transactions, period, onViewAllTransactions }: OverviewPageProps) {
+export function OverviewPage({
+  transactions,
+  period,
+  monthlyBudget,
+  onViewAllTransactions,
+}: OverviewPageProps) {
   if (!period) {
     return (
       <Card

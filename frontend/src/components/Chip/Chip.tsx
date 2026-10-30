@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import './Chip.css';
 
 /** Every chip has the same width, so labels must stay short. Put longer detail beside the chip. */
-const MAX_LABEL_LENGTH = 12;
+const MAX_LABEL_LENGTH = 13;
 
 interface ChipProps {
   /** Semantic tones always need a label. Never rely on color alone. */

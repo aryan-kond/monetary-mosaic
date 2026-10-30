@@ -1,0 +1,23 @@
+.budget-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.budget-form__hint {
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+.budget-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+/* Pushes the less common action to the far side, away from Save. */
+.budget-form__actions .budget-form__remove {
+  margin-right: auto;
+}

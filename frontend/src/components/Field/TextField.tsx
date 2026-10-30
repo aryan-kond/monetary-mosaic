@@ -13,6 +13,8 @@ interface TextFieldProps {
   /** Plain-language message when the value is not valid. */
   error?: string;
   maxLength?: number;
+  /** Task-specific guidance, for example "Enter your monthly budget". It is not a label. */
+  placeholder?: string;
 }
 
 export function TextField({
@@ -24,6 +26,7 @@ export function TextField({
   hint,
   error,
   maxLength,
+  placeholder,
 }: TextFieldProps) {
   const id = useId();
   const hintId = `${id}-hint`;
@@ -49,6 +52,7 @@ export function TextField({
           value={value}
           maxLength={maxLength}
           autoComplete="off"
+          placeholder={placeholder}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           onChange={(event) => onChange(event.target.value)}
