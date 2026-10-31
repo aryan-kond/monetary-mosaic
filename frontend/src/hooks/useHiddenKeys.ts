@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-/** Payments the person marked "not recurring". Kept in memory like the rest of the prototype. */
-export function useRecurringPrefs() {
+/** Items a person chose to hide, such as "not recurring" payments. Kept in memory for now. */
+export function useHiddenKeys() {
   const [hidden, setHidden] = useState<string[]>([]);
 
   const hide = (key: string) =>

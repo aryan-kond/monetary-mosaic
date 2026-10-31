@@ -1,0 +1,81 @@
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 64rem;
+  container-type: inline-size;
+}
+
+/* A confirmation of what just changed. The words carry the meaning, the tint reinforces it. */
+.insights__notice {
+  padding: var(--space-4);
+  border: 1px solid var(--color-positive);
+  border-radius: var(--radius-card);
+  background: var(--color-positive-tint);
+  font-size: var(--text-row);
+  color: var(--color-text-primary);
+}
+
+.insight-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+@container (min-width: 720px) {
+  .insight-tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.insight-tiles > div {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-soft);
+}
+
+.insight-tiles dt {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.insight-tiles dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-section);
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+}
+
+.insight-tiles dd.insight-tiles__sub {
+  margin-top: 2px;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.insights__row {
+  container-type: inline-size;
+}
+
+.insights__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+@container (min-width: 800px) {
+  .insights__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.insights__empty {
+  font-size: var(--text-row);
+  color: var(--color-text-secondary);
+}

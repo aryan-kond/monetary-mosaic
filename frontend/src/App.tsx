@@ -14,7 +14,8 @@ import { TransactionsPage } from './pages/Transactions/TransactionsPage';
 import { getReportingPeriod } from './utils/reportingPeriod';
 import { useBudgets } from './hooks/useBudgets';
 import { BudgetsPage } from './pages/Budgets/BudgetsPage';
-import { useRecurringPrefs } from './hooks/useRecurringPrefs';
+import { useHiddenKeys } from './hooks/useHiddenKeys';
+import { InsightsPage } from './pages/Insights/InsightsPage';
 import { RecurringPage } from './pages/Recurring/RecurringPage';
 import './App.css';
 
@@ -39,11 +40,8 @@ export default function App() {
     removeRule,
   } = useTransactionEdits(sampleTransactions);
   const { monthlyBudget, setMonthlyBudget, categoryLimits, setCategoryLimit } = useBudgets();
-  const {
-    hidden: hiddenRecurring,
-    hide: hideRecurring,
-    restoreAll: restoreRecurring,
-  } = useRecurringPrefs();
+  const recurringHidden = useHiddenKeys();
+  const unusualHidden = useHiddenKeys();
 
   // The Overview covers the month of the latest transaction, so edits and imports can move it.
   const period = getReportingPeriod(transactions);
@@ -54,7 +52,11 @@ export default function App() {
   const isTransactions = activeId === 'transactions';
   const showImport = isTransactions && importing;
   const showsData =
-    isOverview || isTransactions || activeId === 'budgets' || activeId === 'recurring';
+    isOverview ||
+    isTransactions ||
+    activeId === 'budgets' ||
+    activeId === 'recurring' ||
+    activeId === 'insights';
   const showsSampleData = showsData && !showImport && hasSampleData;
 
   // Any move to another screen starts at the top of the page.
@@ -122,9 +124,19 @@ export default function App() {
           <RecurringPage
             transactions={transactions}
             period={period}
-            hiddenKeys={hiddenRecurring}
-            onHide={hideRecurring}
-            onRestoreAll={restoreRecurring}
+            hiddenKeys={recurringHidden.hidden}
+            onHide={recurringHidden.hide}
+            onRestoreAll={recurringHidden.restoreAll}
+          />
+        );
+      case 'insights':
+        return (
+          <InsightsPage
+            transactions={transactions}
+            period={period}
+            hiddenKeys={unusualHidden.hidden}
+            onHide={unusualHidden.hide}
+            onRestoreAll={unusualHidden.restoreAll}
           />
         );
 

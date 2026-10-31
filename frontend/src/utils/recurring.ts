@@ -3,7 +3,7 @@ import type { Transaction } from '../data/transactions';
 import { addMonths } from './calendar';
 import { daysBetween, shiftIsoDate } from './formatDate';
 import { ruleKey } from './merchantRules';
-
+import { median } from './stats';
 export type Cadence = 'weekly' | 'monthly';
 
 export interface Payment {
@@ -43,12 +43,6 @@ const WEEKLY_GAP = { min: 6, max: 8 };
 const AMOUNT_TOLERANCE = { threeOrMore: 0.4, two: 0.15 };
 /** Payments within this of the typical amount count as one fixed amount. */
 const FIXED_TOLERANCE = 0.05;
-
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const middle = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
-}
 
 function cadenceOf(payments: Payment[]): Cadence | null {
   const gaps = payments
