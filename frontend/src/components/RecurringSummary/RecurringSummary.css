@@ -1,0 +1,43 @@
+/* Container query: the tiles follow the width of the page, with or without the sidebar. */
+.recurring-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+@container (min-width: 720px) {
+  .recurring-tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.recurring-tiles > div {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-soft);
+}
+
+.recurring-tiles dt {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.recurring-tiles dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-section);
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+}
+
+.recurring-tiles dd.recurring-tiles__sub {
+  margin-top: 2px;
+  font-size: var(--text-meta);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}

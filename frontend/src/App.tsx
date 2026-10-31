@@ -14,6 +14,8 @@ import { TransactionsPage } from './pages/Transactions/TransactionsPage';
 import { getReportingPeriod } from './utils/reportingPeriod';
 import { useBudgets } from './hooks/useBudgets';
 import { BudgetsPage } from './pages/Budgets/BudgetsPage';
+import { useRecurringPrefs } from './hooks/useRecurringPrefs';
+import { RecurringPage } from './pages/Recurring/RecurringPage';
 import './App.css';
 
 const allNavItems = [...primaryNav, ...utilityNav];
@@ -37,6 +39,11 @@ export default function App() {
     removeRule,
   } = useTransactionEdits(sampleTransactions);
   const { monthlyBudget, setMonthlyBudget, categoryLimits, setCategoryLimit } = useBudgets();
+  const {
+    hidden: hiddenRecurring,
+    hide: hideRecurring,
+    restoreAll: restoreRecurring,
+  } = useRecurringPrefs();
 
   // The Overview covers the month of the latest transaction, so edits and imports can move it.
   const period = getReportingPeriod(transactions);
@@ -46,7 +53,8 @@ export default function App() {
   const isOverview = activeId === 'overview';
   const isTransactions = activeId === 'transactions';
   const showImport = isTransactions && importing;
-  const showsData = isOverview || isTransactions || activeId === 'budgets';
+  const showsData =
+    isOverview || isTransactions || activeId === 'budgets' || activeId === 'recurring';
   const showsSampleData = showsData && !showImport && hasSampleData;
 
   // Any move to another screen starts at the top of the page.
@@ -106,6 +114,17 @@ export default function App() {
             categoryLimits={categoryLimits}
             onMonthlyBudgetChange={setMonthlyBudget}
             onCategoryLimitChange={setCategoryLimit}
+          />
+        );
+
+      case 'recurring':
+        return (
+          <RecurringPage
+            transactions={transactions}
+            period={period}
+            hiddenKeys={hiddenRecurring}
+            onHide={hideRecurring}
+            onRestoreAll={restoreRecurring}
           />
         );
 
