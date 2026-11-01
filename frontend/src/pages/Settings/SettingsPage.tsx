@@ -12,6 +12,7 @@ import type { ImportRecord } from '../../hooks/useTransactionEdits';
 import { formatDateTime } from '../../utils/formatDate';
 import '../../components/SettingsList/SettingsList.css';
 import './SettingsPage.css';
+import { AccountCard } from '../../components/AccountCard/AccountCard';
 
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
 
@@ -25,6 +26,7 @@ interface SettingsPageProps {
   onUndoImport: (importId: string) => void;
   onRemoveSample: () => void;
   onRemoveRule: (key: string) => void;
+  account: { email: string; authDisabled: boolean; onSignOut: () => Promise<void> };
 }
 
 export function SettingsPage({
@@ -34,6 +36,7 @@ export function SettingsPage({
   onUndoImport,
   onRemoveSample,
   onRemoveRule,
+  account,
 }: SettingsPageProps) {
   // What is being confirmed stays put while the dialog fades out, so its text does not change.
   const [pending, setPending] = useState<Pending | null>(null);
@@ -110,19 +113,19 @@ export function SettingsPage({
           {notice}
         </div>
       )}
-
+      <AccountCard {...account} />
       <ImportHistoryCard records={history} onUndo={askToUndo} />
       <CategoryRulesCard rules={rules} onRemove={removeRule} />
       {sampleCount > 0 && <SampleDataCard count={sampleCount} onRemove={askToRemoveSample} />}
 
       <Card title="Where your data lives" description="How your statements are handled.">
         <p className="settings-text">
-          Files you import are read inside this browser tab. Nothing is sent to a server, and
-          nothing connects to your bank.
+          Files you import are read inside this browser tab, and nothing connects to your bank. Your
+          email and password are sent to the server only to sign you in.
         </p>
         <p className="settings-text settings-text--secondary">
-          In this prototype, your transactions, rules, and history are kept in memory only, so
-          reloading the page clears them.
+          For now, your transactions, rules, and history stay in this tab and are not sent to a
+          server. Reloading the page clears them.
         </p>
       </Card>
 

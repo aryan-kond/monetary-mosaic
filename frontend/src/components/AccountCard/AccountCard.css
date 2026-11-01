@@ -1,0 +1,6 @@
+.account-error {
+  margin-top: var(--space-3);
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--color-negative);
+}

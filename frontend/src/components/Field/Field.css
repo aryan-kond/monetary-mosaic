@@ -205,3 +205,32 @@
   font-size: var(--text-label);
   color: var(--color-text-secondary);
 }
+/* Room on the right for a button inside the field, such as show or hide password. */
+.field__control--with-action {
+  padding-right: 56px;
+}
+
+.field__action {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.field__action:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-text-primary);
+}

@@ -18,4 +18,10 @@ export default defineConfig({
       'recharts',
     ],
   },
+  server: {
+    proxy: {
+      // The backend runs on port 4000. Requests to /api are passed along, so cookies stay same-site.
+      '/api': 'http://localhost:4000',
+    },
+  },
 });

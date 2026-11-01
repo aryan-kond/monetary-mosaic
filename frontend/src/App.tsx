@@ -1,207 +1,42 @@
-import { useEffect, useState } from 'react';
-import { Upload } from 'lucide-react';
-import { AppShell } from './components/AppShell/AppShell';
-import { Button } from './components/Button/Button';
-import { PageHeader } from './components/PageHeader/PageHeader';
-import { primaryNav, utilityNav, type NavId } from './components/Sidebar/navItems';
-import { UndoToast } from './components/UndoToast/UndoToast';
-import { transactions as sampleTransactions } from './data/transactions';
-import { describeChange, useTransactionEdits } from './hooks/useTransactionEdits';
-import { ImportPage } from './pages/Import/ImportPage';
-import { OverviewPage } from './pages/Overview/OverviewPage';
-import { SettingsPage } from './pages/Settings/SettingsPage';
-import { TransactionsPage } from './pages/Transactions/TransactionsPage';
-import { getReportingPeriod } from './utils/reportingPeriod';
-import { useBudgets } from './hooks/useBudgets';
-import { BudgetsPage } from './pages/Budgets/BudgetsPage';
-import { useHiddenKeys } from './hooks/useHiddenKeys';
-import { InsightsPage } from './pages/Insights/InsightsPage';
-import { RecurringPage } from './pages/Recurring/RecurringPage';
-import './App.css';
-
-const allNavItems = [...primaryNav, ...utilityNav];
+import { Workspace } from './Workspace';
+import { isAuthPreview, previewSignIn, previewSignUp } from './auth/preview';
+import { useSession } from './auth/useSession';
+import { SessionNotice } from './components/SessionNotice/SessionNotice';
+import { AuthPage } from './pages/Auth/AuthPage';
 
 export default function App() {
-  const [activeId, setActiveId] = useState<NavId>('overview');
-  /** The import flow lives inside Transactions, so this only matters on that screen. */
-  const [importing, setImporting] = useState(false);
-  const {
-    transactions,
-    rules,
-    savedRules,
-    history,
-    lastChange,
-    saveTransaction,
-    undo,
-    dismiss,
-    importTransactions,
-    undoImport,
-    removeSampleData,
-    removeRule,
-  } = useTransactionEdits(sampleTransactions);
-  const { monthlyBudget, setMonthlyBudget, categoryLimits, setCategoryLimit } = useBudgets();
-  const recurringHidden = useHiddenKeys();
-  const unusualHidden = useHiddenKeys();
+  const { state, authDisabled, retry, signIn, signUp, signOut } = useSession();
 
-  // The Overview covers the month of the latest transaction, so edits and imports can move it.
-  const period = getReportingPeriod(transactions);
-  const hasSampleData = transactions.some((transaction) => transaction.isSample);
+  // Development only: look at the sign-in screens without a backend.
+  if (isAuthPreview) return <AuthPage onSignIn={previewSignIn} onSignUp={previewSignUp} />;
 
-  const activeItem = allNavItems.find((item) => item.id === activeId) ?? primaryNav[0];
-  const isOverview = activeId === 'overview';
-  const isTransactions = activeId === 'transactions';
-  const showImport = isTransactions && importing;
-  const showsData =
-    isOverview ||
-    isTransactions ||
-    activeId === 'budgets' ||
-    activeId === 'recurring' ||
-    activeId === 'insights';
-  const showsSampleData = showsData && !showImport && hasSampleData;
-
-  // Any move to another screen starts at the top of the page.
-  useEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, [activeId, importing]);
-
-  const navigate = (id: NavId) => {
-    setActiveId(id);
-    setImporting(false);
-  };
-
-  const startImport = () => {
-    setActiveId('transactions');
-    setImporting(true);
-  };
-
-  const renderPage = () => {
-    if (showImport) {
+  switch (state.status) {
+    case 'checking':
+      return <SessionNotice title="Checking your session…" />;
+    case 'unreachable':
       return (
-        <ImportPage
-          transactions={transactions}
-          rules={rules}
-          onImport={importTransactions}
-          onViewTransactions={() => setImporting(false)}
+        <SessionNotice
+          title="We couldn't reach the server"
+          text="We can't check whether you're signed in right now. Nothing has been lost. Try again in a moment."
+          action={{ label: 'Try again', onClick: retry }}
         />
       );
-    }
-
-    switch (activeId) {
-      case 'overview':
-        return (
-          <OverviewPage
-            transactions={transactions}
-            period={period}
-            monthlyBudget={monthlyBudget}
-            onViewAllTransactions={() => navigate('transactions')}
-          />
-        );
-      case 'transactions':
-        return (
-          <TransactionsPage
-            transactions={transactions}
-            period={period}
-            rules={rules}
-            onSaveTransaction={saveTransaction}
-            onImportStatement={startImport}
-          />
-        );
-
-      case 'budgets':
-        return (
-          <BudgetsPage
-            transactions={transactions}
-            period={period}
-            monthlyBudget={monthlyBudget}
-            categoryLimits={categoryLimits}
-            onMonthlyBudgetChange={setMonthlyBudget}
-            onCategoryLimitChange={setCategoryLimit}
-          />
-        );
-
-      case 'recurring':
-        return (
-          <RecurringPage
-            transactions={transactions}
-            period={period}
-            hiddenKeys={recurringHidden.hidden}
-            onHide={recurringHidden.hide}
-            onRestoreAll={recurringHidden.restoreAll}
-          />
-        );
-      case 'insights':
-        return (
-          <InsightsPage
-            transactions={transactions}
-            period={period}
-            hiddenKeys={unusualHidden.hidden}
-            onHide={unusualHidden.hide}
-            onRestoreAll={unusualHidden.restoreAll}
-          />
-        );
-
-      case 'settings':
-        return (
-          <SettingsPage
-            transactions={transactions}
-            history={history}
-            rules={savedRules}
-            onUndoImport={undoImport}
-            onRemoveSample={removeSampleData}
-            onRemoveRule={removeRule}
-          />
-        );
-      default:
-        return <p className="page-placeholder">This screen will be built in a later step.</p>;
-    }
-  };
-
-  const renderAction = () => {
-    if (showImport) {
+    case 'signedOut':
       return (
-        <Button variant="secondary" onClick={() => setImporting(false)}>
-          Back to transactions
-        </Button>
-      );
-    }
-    if (isOverview || isTransactions) {
-      return (
-        <Button icon={<Upload size={18} strokeWidth={1.75} />} onClick={startImport}>
-          Import statement
-        </Button>
-      );
-    }
-    return undefined;
-  };
-
-  return (
-    <>
-      <AppShell
-        activeId={activeId}
-        onNavigate={navigate}
-        dataNote={
-          hasSampleData
-            ? { title: 'Sample data', text: 'Figures shown are examples, not from a bank account.' }
-            : {
-                title: 'Your imported data',
-                text: 'From the files you uploaded. Nothing is connected to a bank.',
-              }
-        }
-      >
-        <PageHeader
-          title={showImport ? 'Import statement' : activeItem.label}
-          period={showsData && !showImport && period ? period.label : undefined}
-          sampleData={showsSampleData}
-          action={renderAction()}
+        <AuthPage
+          onSignIn={({ email, password }) => signIn(email, password)}
+          onSignUp={({ email, password }) => signUp(email, password)}
         />
-        {renderPage()}
-      </AppShell>
-      <UndoToast
-        message={lastChange ? describeChange(lastChange) : null}
-        messageId={lastChange?.id ?? null}
-        onUndo={undo}
-        onDismiss={dismiss}
-      />
-    </>
-  );
+      );
+    case 'signedIn':
+      // Keyed by person, so nothing one account had open can carry over to another.
+      return (
+        <Workspace
+          key={state.user.id}
+          user={state.user}
+          authDisabled={authDisabled}
+          onSignOut={signOut}
+        />
+      );
+  }
 }

@@ -5,28 +5,37 @@ interface TextFieldProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  /** "email" brings up the email keyboard on phones and turns off auto-capitalizing. */
+  type?: 'text' | 'email';
   inputMode?: 'text' | 'numeric';
+  /** Helps password managers. Ordinary fields leave it off. */
+  autoComplete?: string;
+  /** The field's name, which password managers also use. */
+  name?: string;
   /** Short symbol shown inside the field, such as ₹. */
   prefix?: string;
+  /** Task-specific guidance, for example "Enter your monthly budget". It is not a label. */
+  placeholder?: string;
   /** Explains the expected format or a consequence. */
   hint?: string;
   /** Plain-language message when the value is not valid. */
   error?: string;
   maxLength?: number;
-  /** Task-specific guidance, for example "Enter your monthly budget". It is not a label. */
-  placeholder?: string;
 }
 
 export function TextField({
   label,
   value,
   onChange,
+  type = 'text',
   inputMode,
+  autoComplete,
+  name,
   prefix,
+  placeholder,
   hint,
   error,
   maxLength,
-  placeholder,
 }: TextFieldProps) {
   const id = useId();
   const hintId = `${id}-hint`;
@@ -46,13 +55,16 @@ export function TextField({
         )}
         <input
           id={id}
+          name={name}
           className={prefix ? 'field__control field__control--with-prefix' : 'field__control'}
-          type="text"
+          type={type}
           inputMode={inputMode}
           value={value}
           maxLength={maxLength}
-          autoComplete="off"
           placeholder={placeholder}
+          autoComplete={autoComplete ?? 'off'}
+          autoCapitalize={type === 'email' ? 'none' : undefined}
+          spellCheck={type === 'email' ? false : undefined}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           onChange={(event) => onChange(event.target.value)}
