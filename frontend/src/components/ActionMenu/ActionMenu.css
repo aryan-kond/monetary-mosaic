@@ -1,0 +1,79 @@
+/* Quiet until it is used, so a table of rows stays calm. */
+.action-menu__trigger {
+  border-color: transparent;
+  color: var(--color-text-secondary);
+}
+
+.action-menu__trigger:hover,
+.action-menu__trigger[aria-expanded='true'] {
+  border-color: var(--color-border);
+  background: var(--color-surface-soft);
+  color: var(--color-text-primary);
+}
+
+/* The menu is a native popover, so it floats above everything and is never clipped. */
+.action-menu {
+  inset: auto;
+  min-width: 12rem;
+  margin: 0;
+  padding: var(--space-2);
+  overflow: visible;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-dialog);
+  background: var(--color-canvas);
+  box-shadow: var(--shadow-overlay);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    overlay var(--duration-fast) allow-discrete,
+    display var(--duration-fast) allow-discrete;
+}
+
+/* Hidden until it has been placed, so it never flashes in the wrong spot. */
+.action-menu:not([data-positioned]) {
+  visibility: hidden;
+}
+
+.action-menu:popover-open {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .action-menu:popover-open {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.action-menu__item {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-row);
+  text-align: left;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.action-menu__item:hover,
+.action-menu__item:focus-visible {
+  background: var(--color-surface-soft);
+}
+
+.action-menu__item--destructive {
+  color: var(--color-negative);
+}
+
+.action-menu__item--destructive:hover,
+.action-menu__item--destructive:focus-visible {
+  background: var(--color-negative-tint);
+}

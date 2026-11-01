@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '../../components/Button/Button';
 import { Card } from '../../components/Card/Card';
+import { ConfirmDialog } from '../../components/ConfirmDialog/ConfirmDialog';
 import { EditTransactionDialog } from '../../components/EditTransactionDialog/EditTransactionDialog';
 import { SearchField } from '../../components/Field/SearchField';
 import { SelectField, type SelectOption } from '../../components/Field/SelectField';
 import { TransactionsTable } from '../../components/TransactionsTable/TransactionsTable';
 import { categories, type CategoryId } from '../../data/categories';
-import type { ReportingPeriod } from '../../utils/reportingPeriod';
 import type { Transaction } from '../../data/transactions';
 import type { TransactionDetails } from '../../hooks/useTransactionEdits';
+import { formatCurrency } from '../../utils/formatCurrency';
 import { formatShortDate } from '../../utils/formatDate';
+import type { ReportingPeriod } from '../../utils/reportingPeriod';
 import {
   emptyFilters,
   filterTransactions,
@@ -44,13 +46,16 @@ const dateOptions: SelectOption[] = [
 
 interface TransactionsPageProps {
   transactions: Transaction[];
+  /** The days the Overview covers. Used to tell people how a date change affects it. */
   period: ReportingPeriod | null;
+  /** Categories the person chose to remember, keyed by merchant. */
   rules: Record<string, CategoryId>;
   onSaveTransaction: (
     transactionId: string,
     details: TransactionDetails,
     rememberRule: boolean,
   ) => void;
+  onDeleteTransaction: (transactionId: string) => void;
   /** Starts the import flow. Used when there are no transactions at all. */
   onImportStatement: () => void;
 }
@@ -60,17 +65,21 @@ export function TransactionsPage({
   period,
   rules,
   onSaveTransaction,
+  onDeleteTransaction,
   onImportStatement,
 }: TransactionsPageProps) {
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [sortValue, setSortValue] = useState(defaultSortValue);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  // The transaction being edited is copied when the dialog opens, so its content stays steady
-  // while the dialog fades out after saving.
+  // The transaction being edited or deleted is copied when its dialog opens, so the dialog's
+  // text stays steady while it fades out.
   const [editing, setEditing] = useState<Transaction | undefined>();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogSession, setDialogSession] = useState(0);
+  const [deleting, setDeleting] = useState<Transaction | undefined>();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const resultsRef = useRef<HTMLParagraphElement>(null);
 
   if (transactions.length === 0) {
     return (
@@ -133,6 +142,18 @@ export function TransactionsPage({
     setDialogOpen(false);
   };
 
+  const askToDelete = (transaction: Transaction) => {
+    setDeleting(transaction);
+    setDeleteOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleting) onDeleteTransaction(deleting.id);
+    setDeleteOpen(false);
+    // The row is gone, so bring focus to the results line, which also announces the new count.
+    requestAnimationFrame(() => resultsRef.current?.focus());
+  };
+
   const summary = filtersActive
     ? `${matches.length} of ${transactions.length} transactions match`
     : `${transactions.length} transactions`;
@@ -174,7 +195,7 @@ export function TransactionsPage({
         </div>
 
         <div className="txn-results">
-          <p role="status">
+          <p ref={resultsRef} tabIndex={-1} role="status">
             {summary}
             {rangeNote}
           </p>
@@ -197,7 +218,12 @@ export function TransactionsPage({
           </div>
         ) : (
           <>
-            <TransactionsTable transactions={visible} caption="Transactions" onEdit={openEditor} />
+            <TransactionsTable
+              transactions={visible}
+              caption="Transactions"
+              onEdit={openEditor}
+              onDelete={askToDelete}
+            />
             {matches.length > visible.length && (
               <div className="txn-more">
                 <p>
@@ -226,6 +252,23 @@ export function TransactionsPage({
           onSave={saveEditor}
         />
       )}
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title="Delete this transaction?"
+        description={
+          deleting
+            ? `${deleting.merchant}, ${formatShortDate(deleting.date)}, ${formatCurrency(deleting.amount)}. This removes it from your transactions.`
+            : ''
+        }
+        effects={[
+          'Your totals, budgets, and charts update to match.',
+          'You can undo this straight afterwards, from the message that appears.',
+        ]}
+        confirmLabel="Delete transaction"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteOpen(false)}
+      />
     </div>
   );
 }

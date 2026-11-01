@@ -1,5 +1,4 @@
-import { useId, useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { useId } from 'react';
 import './Field.css';
 
 interface PasswordFieldProps {
@@ -8,31 +7,34 @@ interface PasswordFieldProps {
   onChange: (value: string) => void;
   /** Tells the browser whether to offer a saved password or to suggest a new one. */
   autoComplete: 'current-password' | 'new-password';
+  /** Whether what was typed is shown. The page owns this, so one checkbox can control every field. */
+  revealed: boolean;
   name?: string;
+  /** "pill" gives the field fully rounded ends. */
+  shape?: 'default' | 'pill';
   hint?: string;
   error?: string;
-  placeholder?: string;
 }
 
-/** A password field with a button that shows or hides what was typed. Pasting is allowed. */
+/** A password field. Pasting is allowed, so password managers work. */
 export function PasswordField({
   label,
   value,
   onChange,
   autoComplete,
+  revealed,
   name,
+  shape = 'default',
   hint,
   error,
-  placeholder,
 }: PasswordFieldProps) {
   const id = useId();
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
   const describedBy = [hint && hintId, error && errorId].filter(Boolean).join(' ') || undefined;
-  const [visible, setVisible] = useState(false);
 
   return (
-    <div className="field">
+    <div className={shape === 'pill' ? 'field field--pill' : 'field'}>
       <label className="field__label" htmlFor={id}>
         {label}
       </label>
@@ -40,10 +42,9 @@ export function PasswordField({
         <input
           id={id}
           name={name}
-          className="field__control field__control--with-action"
-          type={visible ? 'text' : 'password'}
+          className="field__control"
+          type={revealed ? 'text' : 'password'}
           value={value}
-          placeholder={placeholder}
           autoComplete={autoComplete}
           autoCapitalize="none"
           spellCheck={false}
@@ -51,18 +52,6 @@ export function PasswordField({
           aria-describedby={describedBy}
           onChange={(event) => onChange(event.target.value)}
         />
-        <button
-          type="button"
-          className="field__action"
-          aria-label={`${visible ? 'Hide' : 'Show'} ${label.toLowerCase()}`}
-          onClick={() => setVisible((current) => !current)}
-        >
-          {visible ? (
-            <EyeOff size={18} strokeWidth={1.75} aria-hidden="true" />
-          ) : (
-            <Eye size={18} strokeWidth={1.75} aria-hidden="true" />
-          )}
-        </button>
       </div>
       {hint && (
         <p id={hintId} className="field__hint">

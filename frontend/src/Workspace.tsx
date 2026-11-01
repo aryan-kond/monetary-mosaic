@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Upload } from 'lucide-react';
-import { AppShell } from './components/AppShell/AppShell';
 import type { User } from './api/auth';
+import { AppShell } from './components/AppShell/AppShell';
 import { Button } from './components/Button/Button';
 import { PageHeader } from './components/PageHeader/PageHeader';
 import { primaryNav, utilityNav, type NavId } from './components/Sidebar/navItems';
 import { UndoToast } from './components/UndoToast/UndoToast';
 import { transactions as sampleTransactions } from './data/transactions';
+import { useBudgets } from './hooks/useBudgets';
+import { useHiddenKeys } from './hooks/useHiddenKeys';
 import { describeChange, useTransactionEdits } from './hooks/useTransactionEdits';
+import { BudgetsPage } from './pages/Budgets/BudgetsPage';
 import { ImportPage } from './pages/Import/ImportPage';
+import { InsightsPage } from './pages/Insights/InsightsPage';
 import { OverviewPage } from './pages/Overview/OverviewPage';
+import { RecurringPage } from './pages/Recurring/RecurringPage';
 import { SettingsPage } from './pages/Settings/SettingsPage';
 import { TransactionsPage } from './pages/Transactions/TransactionsPage';
 import { getReportingPeriod } from './utils/reportingPeriod';
-import { useBudgets } from './hooks/useBudgets';
-import { BudgetsPage } from './pages/Budgets/BudgetsPage';
-import { useHiddenKeys } from './hooks/useHiddenKeys';
-import { InsightsPage } from './pages/Insights/InsightsPage';
-import { RecurringPage } from './pages/Recurring/RecurringPage';
 import './App.css';
 
 const allNavItems = [...primaryNav, ...utilityNav];
@@ -40,6 +40,7 @@ export function Workspace({ user, authDisabled, onSignOut }: WorkspaceProps) {
     history,
     lastChange,
     saveTransaction,
+    deleteTransaction,
     undo,
     dismiss,
     importTransactions,
@@ -111,10 +112,10 @@ export function Workspace({ user, authDisabled, onSignOut }: WorkspaceProps) {
             period={period}
             rules={rules}
             onSaveTransaction={saveTransaction}
+            onDeleteTransaction={deleteTransaction}
             onImportStatement={startImport}
           />
         );
-
       case 'budgets':
         return (
           <BudgetsPage
@@ -126,7 +127,6 @@ export function Workspace({ user, authDisabled, onSignOut }: WorkspaceProps) {
             onCategoryLimitChange={setCategoryLimit}
           />
         );
-
       case 'recurring':
         return (
           <RecurringPage
@@ -147,17 +147,16 @@ export function Workspace({ user, authDisabled, onSignOut }: WorkspaceProps) {
             onRestoreAll={unusualHidden.restoreAll}
           />
         );
-
       case 'settings':
         return (
           <SettingsPage
             transactions={transactions}
             history={history}
             rules={savedRules}
+            account={{ email: user.email, authDisabled, onSignOut }}
             onUndoImport={undoImport}
             onRemoveSample={removeSampleData}
             onRemoveRule={removeRule}
-            account={{ email: user.email, authDisabled, onSignOut }}
           />
         );
       default:

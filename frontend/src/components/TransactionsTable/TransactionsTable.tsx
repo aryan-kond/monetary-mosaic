@@ -2,7 +2,7 @@ import { categories } from '../../data/categories';
 import type { Transaction } from '../../data/transactions';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatShortDate } from '../../utils/formatDate';
-import { Button } from '../Button/Button';
+import { ActionMenu, type ActionMenuItem } from '../ActionMenu/ActionMenu';
 import { Chip } from '../Chip/Chip';
 import './TransactionsTable.css';
 
@@ -10,22 +10,31 @@ interface TransactionsTableProps {
   transactions: Transaction[];
   /** Read by screen readers only. */
   caption: string;
-  /** When given, every row gets an Edit button (Review when the category is uncertain). */
+  /** When given, every row gets an actions menu that starts with Edit (or Review). */
   onEdit?: (transaction: Transaction) => void;
+  /** When given, the actions menu also offers Delete. */
+  onDelete?: (transaction: Transaction) => void;
 }
 
-export function TransactionsTable({ transactions, caption, onEdit }: TransactionsTableProps) {
+export function TransactionsTable({
+  transactions,
+  caption,
+  onEdit,
+  onDelete,
+}: TransactionsTableProps) {
+  const hasActions = Boolean(onEdit || onDelete);
+
   return (
     <div className="txn-table-wrap">
       <table className="txn-table">
         <caption className="visually-hidden">{caption}</caption>
-        {/* The four data columns share the width equally. The button column is fixed. */}
+        {/* The four data columns share the width equally. The actions column is narrow and fixed. */}
         <colgroup>
           <col />
           <col />
           <col className="txn-table__col-category" />
           <col />
-          {onEdit && <col className="txn-table__col-action" />}
+          {hasActions && <col className="txn-table__col-action" />}
         </colgroup>
         <thead>
           <tr>
@@ -39,7 +48,7 @@ export function TransactionsTable({ transactions, caption, onEdit }: Transaction
             <th scope="col" className="txn-table__amount">
               Amount
             </th>
-            {onEdit && (
+            {hasActions && (
               <th scope="col">
                 <span className="visually-hidden">Actions</span>
               </th>
@@ -51,7 +60,23 @@ export function TransactionsTable({ transactions, caption, onEdit }: Transaction
             const category = categories[transaction.categoryId];
             const date = formatShortDate(transaction.date);
             const isIncome = transaction.direction === 'in';
-            const actionLabel = transaction.needsReview ? 'Review' : 'Edit';
+
+            const items: ActionMenuItem[] = [];
+            if (onEdit) {
+              items.push({
+                id: 'edit',
+                label: transaction.needsReview ? 'Review category' : 'Edit',
+                onSelect: () => onEdit(transaction),
+              });
+            }
+            if (onDelete) {
+              items.push({
+                id: 'delete',
+                label: 'Delete',
+                destructive: true,
+                onSelect: () => onDelete(transaction),
+              });
+            }
 
             return (
               <tr key={transaction.id}>
@@ -82,17 +107,12 @@ export function TransactionsTable({ transactions, caption, onEdit }: Transaction
                     formatCurrency(transaction.amount)
                   )}
                 </td>
-                {onEdit && (
-                  <td>
-                    <Button
-                      variant="secondary"
-                      size="compact"
-                      className="txn-table__edit"
-                      aria-label={`${actionLabel} ${transaction.merchant} transaction`}
-                      onClick={() => onEdit(transaction)}
-                    >
-                      {actionLabel}
-                    </Button>
+                {hasActions && (
+                  <td className="txn-table__actions">
+                    <ActionMenu
+                      label={`Actions for ${transaction.merchant}, ${date}`}
+                      items={items}
+                    />
                   </td>
                 )}
               </tr>

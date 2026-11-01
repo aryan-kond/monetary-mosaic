@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { Button } from '../../components/Button/Button';
+import { CheckboxField } from '../../components/Field/CheckboxField';
 import { PasswordField } from '../../components/Field/PasswordField';
 import { TextField } from '../../components/Field/TextField';
 import { Logo } from '../../components/Logo/Logo';
@@ -29,6 +30,7 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -53,6 +55,7 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
     setMode(isSignUp ? 'signin' : 'signup');
     setPassword('');
     setConfirm('');
+    setShowPassword(false);
     setErrors({});
     setFormMessage(null);
     // Announce the new screen by moving focus to its heading.
@@ -112,8 +115,8 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
             label="Email"
             name="email"
             type="email"
+            shape="pill"
             autoComplete={isSignUp ? 'email' : 'username'}
-            placeholder="name@example.com"
             value={email}
             error={errors.email}
             onChange={(value) => {
@@ -123,10 +126,11 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
           />
 
           <PasswordField
-            key={`password-${mode}`}
             label="Password"
             name="password"
+            shape="pill"
             autoComplete={isSignUp ? 'new-password' : 'current-password'}
+            revealed={showPassword}
             hint={isSignUp ? `At least ${MIN_PASSWORD_LENGTH} characters` : undefined}
             error={errors.password}
             value={password}
@@ -140,7 +144,9 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
             <PasswordField
               label="Confirm password"
               name="confirm-password"
+              shape="pill"
               autoComplete="new-password"
+              revealed={showPassword}
               error={errors.confirm}
               value={confirm}
               onChange={(value) => {
@@ -149,6 +155,14 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
               }}
             />
           )}
+
+          <div className="auth__reveal">
+            <CheckboxField
+              label={isSignUp ? 'Show passwords' : 'Show password'}
+              checked={showPassword}
+              onChange={setShowPassword}
+            />
+          </div>
 
           <Button
             type="submit"

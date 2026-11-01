@@ -12,7 +12,7 @@
 }
 
 .txn-table__col-action {
-  width: 6.5rem;
+  width: 4.5rem;
 }
 
 .txn-table th,
@@ -91,17 +91,15 @@
   font-weight: 600;
 }
 
-/* Edit and Review are always the same size. */
-.txn-table .txn-table__edit {
-  width: 5.5rem;
-  padding-inline: 0;
+.txn-table td.txn-table__actions {
+  text-align: right;
 }
 
 /*
  * Wide enough: the category name gets a fixed slot and the pill starts right after it, so every
  * pill lines up vertically. Needs 5 rem + 0.5 rem + the 8 rem chip in each category cell.
  */
-@container (min-width: 1070px) {
+@container (min-width: 1040px) {
   .txn-table__category-cell {
     display: grid;
     grid-template-columns: 5rem auto;

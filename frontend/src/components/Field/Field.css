@@ -48,12 +48,6 @@
   padding-left: 44px;
 }
 
-.field__control--select {
-  padding-right: 44px;
-  appearance: none;
-  cursor: pointer;
-}
-
 .field__icon {
   position: absolute;
   top: 50%;
@@ -63,10 +57,6 @@
   transform: translateY(-50%);
 }
 
-.field__icon--end {
-  right: var(--space-4);
-  left: auto;
-}
 .checkbox {
   display: flex;
   align-items: flex-start;
@@ -205,32 +195,25 @@
   font-size: var(--text-label);
   color: var(--color-text-secondary);
 }
-/* Room on the right for a button inside the field, such as show or hide password. */
-.field__control--with-action {
-  padding-right: 56px;
-}
-
-.field__action {
-  position: absolute;
-  top: 50%;
-  right: 6px;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transform: translateY(-50%);
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard);
-}
 
 .field__action:hover {
   background: var(--color-surface-soft);
   color: var(--color-text-primary);
+}
+/* Fully rounded fields, used on the sign-in screens. */
+.field--pill .field__control {
+  border-radius: var(--radius-pill);
+  padding-left: var(--space-6);
+}
+
+/* Keeps the eye button snug inside the rounded end. */
+.field--pill .field__action {
+  right: 4px;
+}
+
+/* Lines the label and messages up with the text inside the field, not the curve. */
+.field--pill .field__label,
+.field--pill .field__hint,
+.field--pill .field__error {
+  padding-left: var(--space-4);
 }

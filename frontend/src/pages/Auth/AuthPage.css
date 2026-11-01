@@ -43,6 +43,11 @@
   margin-top: var(--space-6);
 }
 
+/* Lines the checkbox up with the text inside the rounded fields, not the curve. */
+.auth__reveal {
+  padding-left: var(--space-4);
+}
+
 .auth__form .auth__submit {
   width: 100%;
   margin-top: var(--space-2);

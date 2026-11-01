@@ -1,0 +1,98 @@
+/* The closed dropdown looks like the other fields, with a chevron that turns when it is open. */
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  text-align: left;
+  cursor: pointer;
+}
+
+.select-trigger__value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select-trigger__chevron {
+  flex: none;
+  color: var(--color-text-secondary);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.select-trigger[aria-expanded='true'] {
+  border-color: var(--color-primary);
+}
+
+.select-trigger[aria-expanded='true'] .select-trigger__chevron {
+  transform: rotate(180deg);
+}
+
+/* The list is a native popover, so a dialog or a table never clips it. */
+.select-list {
+  inset: auto;
+  max-height: 280px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-canvas);
+  box-shadow: var(--shadow-overlay);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    overlay var(--duration-fast) allow-discrete,
+    display var(--duration-fast) allow-discrete;
+}
+
+/* Hidden until it has been placed, so it never flashes in the wrong spot. */
+.select-list:not([data-positioned]) {
+  visibility: hidden;
+}
+
+.select-list:popover-open {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .select-list:popover-open {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  border-radius: 10px;
+  font-size: var(--text-row);
+  color: var(--color-text-body);
+  cursor: pointer;
+}
+
+/* The option the arrow keys or the pointer are on. */
+.select-option[data-active='true'] {
+  background: var(--color-surface-soft);
+}
+
+/* The chosen option is bold and has a check mark, so it never relies on color alone. */
+.select-option[aria-selected='true'] {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.select-option svg {
+  flex: none;
+  color: var(--color-primary);
+}

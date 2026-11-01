@@ -21,6 +21,8 @@ interface TextFieldProps {
   /** Plain-language message when the value is not valid. */
   error?: string;
   maxLength?: number;
+  /** "pill" gives the field fully rounded ends. */
+  shape?: 'default' | 'pill';
 }
 
 export function TextField({
@@ -36,6 +38,7 @@ export function TextField({
   hint,
   error,
   maxLength,
+  shape = 'default',
 }: TextFieldProps) {
   const id = useId();
   const hintId = `${id}-hint`;
@@ -43,7 +46,7 @@ export function TextField({
   const describedBy = [hint && hintId, error && errorId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className="field">
+    <div className={shape === 'pill' ? 'field field--pill' : 'field'}>
       <label className="field__label" htmlFor={id}>
         {label}
       </label>

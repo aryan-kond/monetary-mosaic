@@ -9,6 +9,7 @@ import {
   shiftIsoDate,
   weekdayNames,
 } from '../../utils/formatDate';
+import { positionPopover } from '../../utils/positionPopover';
 import { Button } from '../Button/Button';
 import '../Field/Field.css';
 import './DatePickerField.css';
@@ -41,22 +42,6 @@ const MOVES: Record<string, (isoDate: string) => string> = {
   PageUp: (isoDate) => addMonths(isoDate, -1),
   PageDown: (isoDate) => addMonths(isoDate, 1),
 };
-
-/** Places the calendar under the field, or above it when there is no room below. */
-function positionPopover(trigger: HTMLElement, popover: HTMLElement) {
-  const gap = 8;
-  const margin = 16;
-  const rect = trigger.getBoundingClientRect();
-  const { offsetWidth: width, offsetHeight: height } = popover;
-
-  const left = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
-  const below = rect.bottom + gap;
-  const fitsBelow = below + height <= window.innerHeight - margin;
-  const top = fitsBelow ? below : Math.max(margin, rect.top - gap - height);
-
-  popover.style.left = `${left}px`;
-  popover.style.top = `${top}px`;
-}
 
 export function DatePickerField({ label, value, onChange, highlight, hint }: DatePickerFieldProps) {
   const id = useId();

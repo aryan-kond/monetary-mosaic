@@ -23,15 +23,26 @@ export interface SavedRule {
   categoryId: CategoryId;
 }
 
-/** What was changed last, kept so the change can be undone. */
-export interface TransactionEdit {
-  /** Increases with every edit, so the toast can tell two similar edits apart. */
-  id: number;
-  before: Transaction;
-  after: TransactionDetails;
-  /** Present when the person chose to remember this category for the merchant. */
-  rule?: { key: string; previous?: SavedRule };
-}
+/**
+ * The last thing that was changed, kept so it can be undone. Each one has an `id` that grows
+ * with every change, so the toast can tell two similar changes apart.
+ */
+export type TransactionEdit =
+  | {
+      kind: 'edit';
+      id: number;
+      before: Transaction;
+      after: TransactionDetails;
+      /** Present when the person chose to remember this category for the merchant. */
+      rule?: { key: string; previous?: SavedRule };
+    }
+  | {
+      kind: 'delete';
+      id: number;
+      before: Transaction;
+      /** Where it sat in the list, so Undo puts it back in the same place. */
+      index: number;
+    };
 
 /** One line of import history. */
 export interface ImportRecord {
@@ -61,7 +72,13 @@ export interface ImportInput {
 const listFormat = new Intl.ListFormat('en-IN', { style: 'long', type: 'conjunction' });
 
 /** Plain-language confirmation that says what changed. */
-export function describeChange({ before, after, rule }: TransactionEdit): string {
+export function describeChange(change: TransactionEdit): string {
+  if (change.kind === 'delete') {
+    const { before } = change;
+    return `Deleted ${before.merchant}, ${formatCurrency(before.amount)} on ${formatShortDate(before.date)}.`;
+  }
+
+  const { before, after, rule } = change;
   const changed: string[] = [];
   if (before.merchant !== after.merchant) changed.push('merchant');
   if (before.date !== after.date) changed.push('date');
@@ -98,7 +115,8 @@ export function describeChange({ before, after, rule }: TransactionEdit): string
 
 /**
  * Holds the transactions, remembered merchant rules, and import history in memory. A saved edit
- * marks the transaction as reviewed, and the last edit can be undone. Imports can be undone too.
+ * marks the transaction as reviewed. The last edit or deletion can be undone, and so can an
+ * import.
  */
 export function useTransactionEdits(initial: Transaction[]) {
   const [transactions, setTransactions] = useState(initial);
@@ -147,6 +165,7 @@ export function useTransactionEdits(initial: Transaction[]) {
     }
     editCount.current += 1;
     setLastChange({
+      kind: 'edit',
       id: editCount.current,
       before: target,
       after: details,
@@ -154,23 +173,42 @@ export function useTransactionEdits(initial: Transaction[]) {
     });
   };
 
+  /** Removes one transaction. The last deletion can be undone straight afterwards. */
+  const deleteTransaction = (transactionId: string) => {
+    const index = transactions.findIndex((transaction) => transaction.id === transactionId);
+    if (index === -1) return;
+
+    setTransactions((list) => list.filter((transaction) => transaction.id !== transactionId));
+    editCount.current += 1;
+    setLastChange({ kind: 'delete', id: editCount.current, before: transactions[index], index });
+  };
+
   const undo = () => {
     if (!lastChange) return;
-    const { before, rule } = lastChange;
 
-    setTransactions((list) =>
-      list.map((transaction) => (transaction.id === before.id ? before : transaction)),
-    );
-    if (rule) {
-      setRuleList((current) => {
-        const next = { ...current };
-        if (rule.previous) {
-          next[rule.key] = rule.previous;
-        } else {
-          delete next[rule.key];
-        }
+    if (lastChange.kind === 'delete') {
+      const { before, index } = lastChange;
+      setTransactions((list) => {
+        const next = [...list];
+        next.splice(Math.min(index, next.length), 0, before);
         return next;
       });
+    } else {
+      const { before, rule } = lastChange;
+      setTransactions((list) =>
+        list.map((transaction) => (transaction.id === before.id ? before : transaction)),
+      );
+      if (rule) {
+        setRuleList((current) => {
+          const next = { ...current };
+          if (rule.previous) {
+            next[rule.key] = rule.previous;
+          } else {
+            delete next[rule.key];
+          }
+          return next;
+        });
+      }
     }
     setLastChange(null);
   };
@@ -237,6 +275,7 @@ export function useTransactionEdits(initial: Transaction[]) {
     history,
     lastChange,
     saveTransaction,
+    deleteTransaction,
     undo,
     dismiss,
     importTransactions,
