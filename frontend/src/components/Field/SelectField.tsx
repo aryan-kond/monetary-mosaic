@@ -7,7 +7,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from 'react';
-import { Check, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { positionPopover } from '../../utils/positionPopover';
 import './Field.css';
 import './SelectField.css';
@@ -281,8 +281,7 @@ export function SelectField({
               }}
               onClick={() => choose(index)}
             >
-              <span>{option.label}</span>
-              {option.value === value && <Check size={16} strokeWidth={2} aria-hidden="true" />}
+              {option.label}
             </li>
           ))}
         </ul>

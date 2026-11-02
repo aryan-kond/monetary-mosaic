@@ -16,7 +16,7 @@
   inset: auto;
   min-width: 12rem;
   margin: 0;
-  padding: var(--space-2);
+  padding: 6px;
   overflow: visible;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-dialog);
@@ -51,10 +51,10 @@
 .action-menu__item {
   display: block;
   width: 100%;
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 var(--space-4);
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-pill);
   background: transparent;
   font: inherit;
   font-size: var(--text-row);
@@ -67,6 +67,11 @@
 .action-menu__item:hover,
 .action-menu__item:focus-visible {
   background: var(--color-surface-soft);
+}
+
+/* The focus ring sits inside the pill, so the menu's edge never cuts it off. */
+.action-menu__item:focus-visible {
+  outline-offset: -2px;
 }
 
 .action-menu__item--destructive {
