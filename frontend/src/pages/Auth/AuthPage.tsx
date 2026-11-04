@@ -1,9 +1,11 @@
-import { useRef, useState, type FormEvent } from 'react';
+import { useId, useRef, useState, type FormEvent } from 'react';
 import { Button } from '../../components/Button/Button';
 import { CheckboxField } from '../../components/Field/CheckboxField';
 import { PasswordField } from '../../components/Field/PasswordField';
 import { TextField } from '../../components/Field/TextField';
 import { Logo } from '../../components/Logo/Logo';
+import { PasswordChecklist } from '../../components/PasswordChecklist/PasswordChecklist';
+import { Tabs } from '../../components/Tabs/Tabs';
 import {
   describeAuthError,
   MIN_PASSWORD_LENGTH,
@@ -13,6 +15,26 @@ import {
   type FormMessage,
 } from '../../utils/authValidation';
 import './AuthPage.css';
+
+const TABS: { id: AuthMode; label: string }[] = [
+  { id: 'signin', label: 'Sign in' },
+  { id: 'signup', label: 'Create account' },
+];
+
+const BENEFITS = [
+  {
+    title: 'Bring your own statements',
+    text: 'Import a CSV from your bank. Nothing connects to your account.',
+  },
+  {
+    title: 'Stay in control',
+    text: 'Review and correct every category before it counts.',
+  },
+  {
+    title: 'See what it means',
+    text: 'Budgets, recurring payments, and trends in plain language.',
+  },
+];
 
 interface Credentials {
   email: string;
@@ -35,9 +57,10 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const panelId = useId();
+  const titleId = `${panelId}-title`;
   const formRef = useRef<HTMLFormElement>(null);
   const alertRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
 
   const isSignUp = mode === 'signup';
 
@@ -51,15 +74,15 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
       (field ?? alertRef.current)?.focus();
     });
 
-  const switchMode = () => {
-    setMode(isSignUp ? 'signin' : 'signup');
+  const selectMode = (next: AuthMode) => {
+    if (next === mode) return;
+    setMode(next);
+    // The email stays. Anything secret, and anything that went wrong, is cleared.
     setPassword('');
     setConfirm('');
     setShowPassword(false);
     setErrors({});
     setFormMessage(null);
-    // Announce the new screen by moving focus to its heading.
-    requestAnimationFrame(() => headingRef.current?.focus());
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -87,105 +110,146 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
     }
   };
 
+  const passwordRules = [
+    {
+      id: 'length',
+      label: `At least ${MIN_PASSWORD_LENGTH} characters`,
+      met: password.length >= MIN_PASSWORD_LENGTH,
+    },
+    { id: 'match', label: 'Both passwords match', met: password !== '' && password === confirm },
+  ];
+
   return (
     <main className="auth">
-      <div className="auth__card">
-        <div className="auth__logo">
-          <Logo variant="full" height={56} />
-        </div>
-
-        <h1 ref={headingRef} tabIndex={-1} className="auth__title">
-          {isSignUp ? 'Create your account' : 'Sign in'}
-        </h1>
-        <p className="auth__intro">
-          {isSignUp
-            ? 'Choose an email and a password to get started.'
-            : 'Welcome back. Sign in to see your finances.'}
-        </p>
-
-        {formMessage && (
-          <div ref={alertRef} tabIndex={-1} role="alert" className="auth-alert">
-            <p className="auth-alert__title">{formMessage.title}</p>
-            <p>{formMessage.text}</p>
-          </div>
-        )}
-
-        <form ref={formRef} className="auth__form" noValidate onSubmit={handleSubmit}>
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            shape="pill"
-            autoComplete={isSignUp ? 'email' : 'username'}
-            value={email}
-            error={errors.email}
-            onChange={(value) => {
-              setEmail(value);
-              clearError('email');
-            }}
-          />
-
-          <PasswordField
-            label="Password"
-            name="password"
-            shape="pill"
-            autoComplete={isSignUp ? 'new-password' : 'current-password'}
-            revealed={showPassword}
-            hint={isSignUp ? `At least ${MIN_PASSWORD_LENGTH} characters` : undefined}
-            error={errors.password}
-            value={password}
-            onChange={(value) => {
-              setPassword(value);
-              clearError('password');
-            }}
-          />
-
-          {isSignUp && (
-            <PasswordField
-              label="Confirm password"
-              name="confirm-password"
-              shape="pill"
-              autoComplete="new-password"
-              revealed={showPassword}
-              error={errors.confirm}
-              value={confirm}
-              onChange={(value) => {
-                setConfirm(value);
-                clearError('confirm');
-              }}
-            />
-          )}
-
-          <div className="auth__reveal">
-            <CheckboxField
-              label={isSignUp ? 'Show passwords' : 'Show password'}
-              checked={showPassword}
-              onChange={setShowPassword}
-            />
+      <div className="auth__shell">
+        <section className="auth__main">
+          {/* On narrow screens the brand panel is hidden, so the logo sits here instead. */}
+          <div className="auth__logo-mobile">
+            <Logo variant="full" height={64} />
           </div>
 
-          <Button
-            type="submit"
-            className="auth__submit"
-            disabled={submitting}
-            aria-busy={submitting}
+          <Tabs label="Account" tabs={TABS} value={mode} onChange={selectMode} panelId={panelId} />
+
+          <div
+            id={panelId}
+            role="tabpanel"
+            aria-labelledby={`${panelId}-tab-${mode}`}
+            className="auth__body"
           >
-            {submitting
-              ? isSignUp
-                ? 'Creating your account…'
-                : 'Signing in…'
-              : isSignUp
-                ? 'Create account'
-                : 'Sign in'}
-          </Button>
-        </form>
+            <header className="auth__header">
+              <h1 id={titleId} className="auth__title">
+                {isSignUp ? 'Create your account' : 'Welcome back'}
+              </h1>
+              <p className="auth__intro">
+                {isSignUp
+                  ? 'Choose an email and a password to get started.'
+                  : 'Sign in to see your finances.'}
+              </p>
+            </header>
 
-        <p className="auth__switch">
-          {isSignUp ? 'Already have an account? ' : 'New to Monetary Mosaic? '}
-          <button type="button" className="link-button" onClick={switchMode}>
-            {isSignUp ? 'Sign in' : 'Create an account'}
-          </button>
-        </p>
+            {formMessage && (
+              <div ref={alertRef} tabIndex={-1} role="alert" className="auth-alert">
+                <p className="auth-alert__title">{formMessage.title}</p>
+                <p>{formMessage.text}</p>
+              </div>
+            )}
+
+            <form
+              ref={formRef}
+              className="auth__form"
+              noValidate
+              aria-labelledby={titleId}
+              onSubmit={handleSubmit}
+            >
+              <div className="auth__group">
+                <TextField
+                  label="Email"
+                  name="email"
+                  type="email"
+                  shape="pill"
+                  autoComplete={isSignUp ? 'email' : 'username'}
+                  value={email}
+                  error={errors.email}
+                  onChange={(value) => {
+                    setEmail(value);
+                    clearError('email');
+                  }}
+                />
+              </div>
+
+              <div className="auth__group">
+                <PasswordField
+                  label="Password"
+                  name="password"
+                  shape="pill"
+                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                  revealed={showPassword}
+                  error={errors.password}
+                  value={password}
+                  onChange={(value) => {
+                    setPassword(value);
+                    clearError('password');
+                  }}
+                />
+
+                {isSignUp && (
+                  <PasswordField
+                    label="Confirm password"
+                    name="confirm-password"
+                    shape="pill"
+                    autoComplete="new-password"
+                    revealed={showPassword}
+                    error={errors.confirm}
+                    value={confirm}
+                    onChange={(value) => {
+                      setConfirm(value);
+                      clearError('confirm');
+                    }}
+                  />
+                )}
+
+                <div className="auth__reveal">
+                  <CheckboxField
+                    label={isSignUp ? 'Show passwords' : 'Show password'}
+                    checked={showPassword}
+                    onChange={setShowPassword}
+                  />
+                </div>
+
+                {isSignUp && <PasswordChecklist rules={passwordRules} />}
+              </div>
+
+              <Button
+                type="submit"
+                className="auth__submit"
+                disabled={submitting}
+                aria-busy={submitting}
+              >
+                {submitting
+                  ? isSignUp
+                    ? 'Creating your account…'
+                    : 'Signing in…'
+                  : isSignUp
+                    ? 'Create account'
+                    : 'Sign in'}
+              </Button>
+            </form>
+          </div>
+        </section>
+
+        {/* After the form in the page, but shown on the left on wide screens. */}
+        <aside className="auth__aside" aria-label="About Monetary Mosaic">
+          <Logo variant="full" height={72} />
+          <h2 className="auth__aside-title">A clearer view of your money</h2>
+          <ul className="auth__benefits">
+            {BENEFITS.map((benefit) => (
+              <li key={benefit.title}>
+                <strong>{benefit.title}</strong>
+                <span>{benefit.text}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
       </div>
     </main>
   );

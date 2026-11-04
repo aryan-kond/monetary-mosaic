@@ -13,7 +13,7 @@ interface SessionNoticeProps {
 export function SessionNotice({ title, text, action }: SessionNoticeProps) {
   return (
     <main className="session-notice">
-      <Logo variant="full" height={56} />
+      <Logo variant="full" height={64} />
       <div className="session-notice__body" role={action ? 'alert' : 'status'}>
         <h1 className="session-notice__title">{title}</h1>
         {text && <p className="session-notice__text">{text}</p>}

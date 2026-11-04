@@ -1,0 +1,40 @@
+.tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-soft);
+}
+
+.tabs__tab {
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-control);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.tabs__tab:hover {
+  color: var(--color-text-primary);
+}
+
+/* The chosen tab is raised and bold, so it never relies on color alone. */
+.tabs__tab[aria-selected='true'] {
+  border-color: var(--color-border);
+  background: var(--color-canvas);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-card);
+}
