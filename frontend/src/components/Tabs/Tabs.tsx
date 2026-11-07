@@ -1,4 +1,4 @@
-import { useRef, type KeyboardEvent } from 'react';
+import { useRef, type CSSProperties, type KeyboardEvent } from 'react';
 import './Tabs.css';
 
 interface TabItem<T extends string> {
@@ -22,6 +22,10 @@ interface TabsProps<T extends string> {
 /** A pill-shaped switch between a few views. The arrow keys, Home, and End move between tabs. */
 export function Tabs<T extends string>({ label, tabs, value, onChange, panelId }: TabsProps<T>) {
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
+  const selectedIndex = Math.max(
+    tabs.findIndex((tab) => tab.id === value),
+    0,
+  );
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     let next: number;
@@ -37,7 +41,14 @@ export function Tabs<T extends string>({ label, tabs, value, onChange, panelId }
   };
 
   return (
-    <div role="tablist" aria-label={label} className="tabs">
+    <div
+      role="tablist"
+      aria-label={label}
+      className="tabs"
+      style={{ '--tab-count': tabs.length, '--tab-index': selectedIndex } as CSSProperties}
+    >
+      {/* The raised pill behind the chosen tab. It slides when the choice changes. */}
+      <span className="tabs__thumb" aria-hidden="true" />
       {tabs.map((tab, index) => {
         const selected = tab.id === value;
         return (

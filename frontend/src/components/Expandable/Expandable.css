@@ -1,0 +1,32 @@
+/* Animating the grid row from 0fr to 1fr opens the content to its natural height. */
+.expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows var(--duration-menu) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
+}
+
+.expandable--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+/*
+ * Hiding the overflow is what lets the content collapse, but it also cuts off anything that
+ * sticks out, such as a blue focus ring. The padding leaves room for the ring, and the matching
+ * negative margin cancels it out, so nothing moves.
+ */
+.expandable__inner {
+  min-height: 0;
+  margin: calc(-1 * var(--space-2));
+  padding: var(--space-2);
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expandable {
+    transition: none;
+  }
+}

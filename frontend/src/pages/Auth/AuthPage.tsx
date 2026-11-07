@@ -3,6 +3,7 @@ import { Button } from '../../components/Button/Button';
 import { CheckboxField } from '../../components/Field/CheckboxField';
 import { PasswordField } from '../../components/Field/PasswordField';
 import { TextField } from '../../components/Field/TextField';
+import { Expandable } from '../../components/Expandable/Expandable';
 import { Logo } from '../../components/Logo/Logo';
 import { PasswordChecklist } from '../../components/PasswordChecklist/PasswordChecklist';
 import { Tabs } from '../../components/Tabs/Tabs';
@@ -119,13 +120,21 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
     { id: 'match', label: 'Both passwords match', met: password !== '' && password === confirm },
   ];
 
+  const submitLabel = submitting
+    ? isSignUp
+      ? 'Creating your account…'
+      : 'Signing in…'
+    : isSignUp
+      ? 'Create account'
+      : 'Sign in';
+
   return (
     <main className="auth">
       <div className="auth__shell">
         <section className="auth__main">
           {/* On narrow screens the brand panel is hidden, so the logo sits here instead. */}
           <div className="auth__logo-mobile">
-            <Logo variant="full" height={64} />
+            <Logo variant="full" height={80} />
           </div>
 
           <Tabs label="Account" tabs={TABS} value={mode} onChange={selectMode} panelId={panelId} />
@@ -136,7 +145,8 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
             aria-labelledby={`${panelId}-tab-${mode}`}
             className="auth__body"
           >
-            <header className="auth__header">
+            {/* A new key each time the mode changes, so the heading fades up again. */}
+            <header key={mode} className="auth__header auth-enter">
               <h1 id={titleId} className="auth__title">
                 {isSignUp ? 'Create your account' : 'Welcome back'}
               </h1>
@@ -161,22 +171,21 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
               aria-labelledby={titleId}
               onSubmit={handleSubmit}
             >
-              <div className="auth__group">
-                <TextField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  shape="pill"
-                  autoComplete={isSignUp ? 'email' : 'username'}
-                  value={email}
-                  error={errors.email}
-                  onChange={(value) => {
-                    setEmail(value);
-                    clearError('email');
-                  }}
-                />
-              </div>
+              <TextField
+                label="Email"
+                name="email"
+                type="email"
+                shape="pill"
+                autoComplete={isSignUp ? 'email' : 'username'}
+                value={email}
+                error={errors.email}
+                onChange={(value) => {
+                  setEmail(value);
+                  clearError('email');
+                }}
+              />
 
+              {/* Spacing sits inside each part, so a closed part leaves no gap behind. */}
               <div className="auth__group">
                 <PasswordField
                   label="Password"
@@ -192,21 +201,23 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
                   }}
                 />
 
-                {isSignUp && (
-                  <PasswordField
-                    label="Confirm password"
-                    name="confirm-password"
-                    shape="pill"
-                    autoComplete="new-password"
-                    revealed={showPassword}
-                    error={errors.confirm}
-                    value={confirm}
-                    onChange={(value) => {
-                      setConfirm(value);
-                      clearError('confirm');
-                    }}
-                  />
-                )}
+                <Expandable open={isSignUp}>
+                  <fieldset className="auth__fieldset" disabled={!isSignUp}>
+                    <PasswordField
+                      label="Confirm password"
+                      name="confirm-password"
+                      shape="pill"
+                      autoComplete="new-password"
+                      revealed={showPassword}
+                      error={errors.confirm}
+                      value={confirm}
+                      onChange={(value) => {
+                        setConfirm(value);
+                        clearError('confirm');
+                      }}
+                    />
+                  </fieldset>
+                </Expandable>
 
                 <div className="auth__reveal">
                   <CheckboxField
@@ -216,7 +227,11 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
                   />
                 </div>
 
-                {isSignUp && <PasswordChecklist rules={passwordRules} />}
+                <Expandable open={isSignUp}>
+                  <div className="auth__checklist">
+                    <PasswordChecklist rules={passwordRules} />
+                  </div>
+                </Expandable>
               </div>
 
               <Button
@@ -225,13 +240,9 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
                 disabled={submitting}
                 aria-busy={submitting}
               >
-                {submitting
-                  ? isSignUp
-                    ? 'Creating your account…'
-                    : 'Signing in…'
-                  : isSignUp
-                    ? 'Create account'
-                    : 'Sign in'}
+                <span key={submitLabel} className="auth-enter">
+                  {submitLabel}
+                </span>
               </Button>
             </form>
           </div>
@@ -239,7 +250,7 @@ export function AuthPage({ onSignIn, onSignUp }: AuthPageProps) {
 
         {/* After the form in the page, but shown on the left on wide screens. */}
         <aside className="auth__aside" aria-label="About Monetary Mosaic">
-          <Logo variant="full" height={72} />
+          <Logo variant="full" height={96} />
           <h2 className="auth__aside-title">A clearer view of your money</h2>
           <ul className="auth__benefits">
             {BENEFITS.map((benefit) => (

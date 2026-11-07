@@ -50,19 +50,47 @@
   gap: var(--space-6);
 }
 
+/* The password group has no gap of its own. Each part brings its own space above it. */
 .auth__group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.auth__group > .field {
+  margin-top: var(--space-2);
+}
+
+.auth__fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-4) 0 0;
+  border: 0;
 }
 
 /* Lines the checkbox up with the text inside the rounded fields, not the curve. */
 .auth__reveal {
-  padding-left: var(--space-4);
+  padding: var(--space-2) 0 0 var(--space-4);
+}
+
+.auth__checklist {
+  padding-top: var(--space-4);
 }
 
 .auth__form .auth__submit {
   width: 100%;
+}
+
+/* A soft fade up. Used when the heading and the button's words change. */
+@keyframes auth-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.auth-enter {
+  animation: auth-enter var(--duration-menu) var(--ease-standard);
 }
 
 /* Words carry the meaning. The border and tint only reinforce it. */
@@ -156,5 +184,11 @@
 @media (max-width: 479px) {
   .auth__main {
     padding: var(--space-6) var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-enter {
+    animation: none;
   }
 }

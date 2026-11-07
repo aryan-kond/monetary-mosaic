@@ -1,0 +1,24 @@
+/* Everything is measured in em, and the font size is set from the ring's height, so the ring,
+   the gap, and the words scale together. */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.logo__mark {
+  display: block;
+  flex: none;
+  width: auto;
+}
+
+.logo__word {
+  display: flex;
+  flex-direction: column;
+}

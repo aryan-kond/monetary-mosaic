@@ -1,0 +1,122 @@
+.cb {
+  /* Defaults come from the app's design tokens. The component's props override them. */
+  --cb-c1: var(--color-primary);
+  --cb-c2: #7fa2e6;
+  --cb-s: 16px;
+  --cb-k: 1;
+  --cb-fg: var(--color-text-primary);
+  /* Half-strength text color, so the empty box clears the 3:1 contrast that controls need. */
+  --cb-ring: color-mix(in srgb, var(--cb-fg) 50%, transparent);
+
+  position: relative;
+  max-width: 100%;
+  font-size: var(--cb-s);
+  color: var(--cb-fg);
+}
+
+/* The whole row is the tap target, and it is never smaller than 44 px. */
+.cb__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  min-width: 44px;
+  max-width: 100%;
+  min-height: 44px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hidden from view but still the real control, so it keeps focus, keyboard, and screen readers. */
+.cb__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.cb__box {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 0.45em;
+  box-shadow: inset 0 0 0 2px var(--cb-ring);
+  transition-property: background-color, box-shadow;
+  transition-duration: calc(0.35s / var(--cb-k));
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* The tick is drawn by sliding a dash along it. */
+.cb__box svg {
+  width: 70%;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset calc(0.35s / var(--cb-k)) cubic-bezier(0.25, 0.1, 0.25, 1)
+    calc(0.1s / var(--cb-k));
+}
+
+.cb__input:checked + .cb__box {
+  background: var(--cb-c1);
+  box-shadow: inset 0 0 0 2px var(--cb-c1);
+  animation: cb-pop calc(0.4s / var(--cb-k)) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cb__input:checked + .cb__box svg {
+  stroke-dashoffset: 0;
+}
+
+@keyframes cb-pop {
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* A hover cue for mice only. Nothing depends on it, so touch screens lose nothing. */
+@media (hover: hover) {
+  .cb__row:hover .cb__input:not(:checked) + .cb__box {
+    box-shadow: inset 0 0 0 2px var(--cb-c2);
+  }
+}
+
+.cb__input:focus-visible + .cb__box {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.cb__label {
+  min-width: 0;
+  font-weight: 500;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* Lines up under the label text, not under the box. */
+.cb__hint {
+  margin: 0 0 0 calc(1.6em + 0.7em);
+  font-size: var(--text-label);
+  color: var(--color-text-secondary);
+}
+
+/* No bounce and no drawing, but the same end result: a filled box with a complete tick. */
+@media (prefers-reduced-motion: reduce) {
+  .cb__box,
+  .cb__box svg {
+    transition: none;
+  }
+
+  .cb__input:checked + .cb__box {
+    animation: none;
+  }
+}

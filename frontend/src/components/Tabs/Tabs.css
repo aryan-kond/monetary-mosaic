@@ -1,4 +1,5 @@
 .tabs {
+  position: relative;
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
@@ -9,10 +10,29 @@
   background: var(--color-surface-soft);
 }
 
+/* The same width as one tab, moved along by whole tabs. */
+.tabs__thumb {
+  position: absolute;
+  top: var(--space-1);
+  bottom: var(--space-1);
+  left: var(--space-1);
+  width: calc(
+    (100% - 2 * var(--space-1) - (var(--tab-count) - 1) * var(--space-1)) / var(--tab-count)
+  );
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-canvas);
+  box-shadow: var(--shadow-card);
+  transform: translateX(calc(var(--tab-index) * (100% + var(--space-1))));
+  transition: transform var(--duration-menu) var(--ease-standard);
+}
+
 .tabs__tab {
+  position: relative;
+  z-index: 1;
   min-height: 44px;
   padding: 0 var(--space-4);
-  border: 1px solid transparent;
+  border: 0;
   border-radius: var(--radius-pill);
   background: transparent;
   font: inherit;
@@ -20,21 +40,21 @@
   font-weight: 500;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-fast) var(--ease-standard);
 }
 
 .tabs__tab:hover {
   color: var(--color-text-primary);
 }
 
-/* The chosen tab is raised and bold, so it never relies on color alone. */
+/* The chosen tab is bold and sits on the raised pill, so it never relies on color alone. */
 .tabs__tab[aria-selected='true'] {
-  border-color: var(--color-border);
-  background: var(--color-canvas);
   font-weight: 600;
   color: var(--color-text-primary);
-  box-shadow: var(--shadow-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabs__thumb {
+    transition: none;
+  }
 }
