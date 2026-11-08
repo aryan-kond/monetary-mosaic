@@ -84,3 +84,8 @@
 .button--destructive:active:not(:disabled) {
   background: var(--color-negative-pressed);
 }
+
+/* A link styled as a button. */
+a.button {
+  text-decoration: none;
+}

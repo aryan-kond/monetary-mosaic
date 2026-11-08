@@ -3,8 +3,10 @@ import { isAuthPreview, previewSignIn, previewSignUp } from './auth/preview';
 import { useSession } from './auth/useSession';
 import { SessionNotice } from './components/SessionNotice/SessionNotice';
 import { AuthPage } from './pages/Auth/AuthPage';
+import { NotFoundPage } from './pages/NotFound/NotFoundPage';
+import { isKnownPath } from './utils/routes';
 
-export default function App() {
+function AppWithSession() {
   const { state, authDisabled, retry, signIn, signUp, signOut } = useSession();
 
   // Development only: look at the sign-in screens without a backend.
@@ -39,4 +41,10 @@ export default function App() {
         />
       );
   }
+}
+
+export default function App() {
+  // Any address other than the start page is one we do not have. Saying so needs no sign-in.
+  if (!isKnownPath(window.location.pathname)) return <NotFoundPage />;
+  return <AppWithSession />;
 }
