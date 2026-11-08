@@ -1,33 +1,96 @@
 .not-found {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background: var(--color-canvas);
-}
-
-.not-found__header {
-  padding: var(--space-6) var(--space-8);
-}
-
-.not-found__home {
-  display: inline-block;
-  border-radius: var(--radius-card);
-}
-
-.not-found__main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--space-8) var(--space-4) var(--space-16);
+  min-height: 100vh;
+  padding: var(--space-8) var(--space-4);
+  background: var(--color-canvas);
   text-align: center;
   animation: not-found-enter var(--duration-dialog) var(--ease-standard);
 }
 
-/* The big number, with a short soft bar under it. */
+/* The drawing. Its colors come from the design tokens. */
+.not-found__art {
+  width: min(14rem, 62vw);
+  height: auto;
+  margin-bottom: var(--space-4);
+  overflow: visible;
+}
+
+.not-found__cloud-outline {
+  fill: var(--color-primary-tint);
+  stroke: var(--color-primary);
+  stroke-width: 6;
+  stroke-linejoin: round;
+}
+
+.not-found__cloud-fill {
+  fill: var(--color-primary-tint);
+  stroke: none;
+}
+
+.not-found__eye {
+  fill: var(--color-text-primary);
+}
+
+.not-found__mouth {
+  fill: none;
+  stroke: var(--color-text-primary);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.not-found__tear {
+  fill: var(--color-primary);
+}
+
+.not-found__drop {
+  stroke: var(--color-primary);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+/* The cloud drifts up and down a little, and the rain falls and fades. */
+.not-found__cloud {
+  animation: not-found-bob 4s ease-in-out infinite;
+}
+
+.not-found__drop {
+  animation: not-found-rain 1.8s ease-in infinite;
+}
+
+.not-found__drop:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.not-found__drop:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+@keyframes not-found-bob {
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes not-found-rain {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
 .not-found__code {
-  font-size: clamp(5rem, 22vw, 9rem);
+  font-size: clamp(3.5rem, 14vw, 6rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -35,18 +98,8 @@
   color: var(--color-primary);
 }
 
-.not-found__code::after {
-  display: block;
-  width: 4rem;
-  height: 8px;
-  margin: var(--space-4) auto 0;
-  border-radius: var(--radius-pill);
-  background: var(--color-primary-tint);
-  content: '';
-}
-
 .not-found__title {
-  margin-top: var(--space-6);
+  margin-top: var(--space-4);
   font-size: var(--text-page-title);
   font-weight: 700;
   line-height: 1.2;
@@ -60,32 +113,18 @@
   color: var(--color-text-secondary);
 }
 
-.not-found__path {
-  max-width: 100%;
-  margin-top: var(--space-4);
-  font-size: var(--text-label);
-  color: var(--color-text-secondary);
-}
-
-.not-found__path code {
-  display: inline-block;
-  max-width: 100%;
-  padding: 2px var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-soft);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: var(--text-label);
-  overflow-wrap: anywhere;
-  color: var(--color-text-primary);
-}
-
+/* Both buttons are exactly the same size. */
 .not-found__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-3);
   margin-top: var(--space-8);
+}
+
+.not-found__actions .button {
+  flex: none;
+  width: 11rem;
 }
 
 @keyframes not-found-enter {
@@ -95,14 +134,11 @@
   }
 }
 
-@media (max-width: 479px) {
-  .not-found__header {
-    padding: var(--space-4);
-  }
-}
-
+/* With reduced motion the page is still, and the rain stays in view as three short lines. */
 @media (prefers-reduced-motion: reduce) {
-  .not-found__main {
+  .not-found,
+  .not-found__cloud,
+  .not-found__drop {
     animation: none;
   }
 }
